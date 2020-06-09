@@ -1,0 +1,195 @@
+---
+version: "0.0.2"
+namespace: "CMCL"
+author: "CMCL Innovations"
+
+ontology:
+
+  WRAPPER:
+    subclass_of:
+    - CUBA.WRAPPER
+
+  ################ Relationships
+
+  ENCLOSES:
+    inverse: CMCL.IS_ENCLOSED_BY
+    subclass_of:
+      - CUBA.ACTIVE_RELATIONSHIP
+
+  IS_ENCLOSED_BY:
+    inverse: CMCL.ENCLOSES
+    subclass_of:
+      - CUBA.PASSIVE_RELATIONSHIP    
+
+  HAS_PART:
+    description: "default relationship"
+    inverse: CMCL.IS_PART_OF
+    subclass_of:
+      - CMCL.ENCLOSES
+
+  IS_PART_OF:
+    description: "inverse of the default relationship"
+    inverse: CMCL.HAS_PART
+    subclass_of:
+      - CMCL.IS_ENCLOSED_BY
+
+  ############## entities
+
+  CB_REACTOR:
+    subclass_of:
+    - CUBA.ENTITY
+    - CMCL.HAS_PART:
+        range: CMCL.LENGTH
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.CROSS_SECT_AREA
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.TEMPERATURE
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PRESSURE
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.REACT_GAS
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.FLOWRATE
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.CB_PART
+        cardinality: 1
+
+  REACT_GAS:
+    subclass_of:
+    - CUBA.ENTITY
+    - CMCL.HAS_PART:
+        range: CMCL.GAS_SPECIES
+        cardinality: some
+
+
+  CB_PART:
+    subclass_of:
+    - CUBA.ENTITY
+    - CMCL.HAS_PART:
+        range: CMCL.PART_NUM_DENS
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PART_MEAN_SIZE
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PART_VOL_FRAC
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PART_AVG_FDIM
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PART_SIZE_DISTR
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PRIM_SIZE_DISTR
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PART_SIZE_CLASSES
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PRIM_SIZE_CLASSES
+        cardinality: 1
+
+  GAS_SPECIES:
+    subclass_of:
+    - CUBA.ENTITY
+    - CMCL.HAS_PART:
+        range: CMCL.CONCENTRATION
+        cardinality: 1
+    attributes:
+      CMCL.NAME:
+
+  VALUE:
+    subclass_of:
+    - CUBA.ATTRIBUTE
+
+  VALUE_N:
+    subclass_of:
+    - CUBA.ATTRIBUTE
+    datatype: VECTOR:20
+
+  UNIT:
+    subclass_of:
+    - CUBA.ATTRIBUTE
+    datatype: STRING
+
+  NAME:
+    subclass_of:
+    - CUBA.ATTRIBUTE
+    datatype: STRING
+
+  PHYSICAL_QUANTITY:
+    subclass_of:
+    - CUBA.ENTITY
+    attributes:
+      CMCL.VALUE:
+      CMCL.UNIT:
+
+  PHYSICAL_QUANTITY_N:
+    subclass_of:
+    - CUBA.ENTITY
+    attributes:
+      CMCL.VALUE_N:
+      CMCL.UNIT:
+  
+  LENGTH:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  CROSS_SECT_AREA:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  TEMPERATURE:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  PRESSURE:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  CONCENTRATION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  FLOWRATE:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  PART_NUM_DENS:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  PART_MEAN_SIZE:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  PART_VOL_FRAC:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  PART_AVG_FDIM:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  PART_SIZE_DISTR:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY_N
+    
+  PRIM_SIZE_DISTR:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY_N
+
+  PART_SIZE_CLASSES:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY_N
+
+  PRIM_SIZE_CLASSES:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY_N
