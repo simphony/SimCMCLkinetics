@@ -10,4 +10,5 @@ coverage.xml
 *.png
 
 ## User defined
+*.egg-info
 *.mp4
