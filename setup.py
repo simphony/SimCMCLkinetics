@@ -20,5 +20,5 @@ setup(
     test_suite='tests',
     entry_points={
         'wrappers':
-            'wrapper = osp.wrappers.simdome:SimDomeSession'},
+            'wrapper = osp.wrappers.simcmclkinetics:SimCMCLkineticsSession'},
 )
