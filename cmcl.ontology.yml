@@ -33,7 +33,7 @@ ontology:
     subclass_of:
       - CMCL.IS_ENCLOSED_BY
 
-  ############## entities
+############## entities
 
   CB_REACTOR:
     subclass_of:
@@ -60,13 +60,58 @@ ontology:
         range: CMCL.CB_PART
         cardinality: 1
 
+  MONOLITIC_REACTOR:
+    subclass_of:
+    - CUBA.ENTITY
+    - CMCL.HAS_PART:
+        range: CMCL.LENGTH
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.DIAMETER
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.CHANNEL_DENSITY
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.WALL_THICKNESS
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.WASHCOAT_THICKNESS
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.CAT_SURF_MULT
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PERMEABILITY
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PORE_DIAMETER
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.WALL_POROSITY
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.TEMPERATURE
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.PRESSURE
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.REACT_GAS
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.FLOWRATE
+        cardinality: 1
+    - CMCL.HAS_PART:
+        range: CMCL.CB_PART
+        cardinality: 1
+
   REACT_GAS:
     subclass_of:
     - CUBA.ENTITY
     - CMCL.HAS_PART:
         range: CMCL.GAS_SPECIES
         cardinality: some
-
 
   CB_PART:
     subclass_of:
@@ -193,3 +238,35 @@ ontology:
   PRIM_SIZE_CLASSES:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY_N
+
+  DIAMETER:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  CHANNEL_DENSITY:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  WALL_THICKNESS:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  WASHCOAT_THICKNESS:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  CAT_SURF_MULT:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  PERMEABILITY:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+    
+  PORE_DIAMETER:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  WALL_POROSITY:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
