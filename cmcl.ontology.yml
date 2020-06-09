@@ -60,7 +60,7 @@ ontology:
         range: CMCL.CB_PART
         cardinality: 1
 
-  MONOLITIC_REACTOR:
+  MONOLITHIC_REACTOR:
     subclass_of:
     - CUBA.ENTITY
     - CMCL.HAS_PART:
