@@ -15,40 +15,60 @@ class SimulationEngine:
         print("Now the engine is running")
         self.executed = True
 
-    def add_gas_species(self, uid, name, conc):
+    # inlet mixture updates
+    def update_c2h2_massfrac(self, uid, value):
         """"""
-        print("Added gas-phase species %s with name %s and conc %s"
-              % (uid, name, conc))
+        print("Update inlet mixture %s. Setting C2H2 mass fraction to %s"
+              % (uid, value))
 
-    def remove_gas_species(self, uid):
+    def update_c6h6_massfrac(self, uid, value):
         """"""
-        print("Removed gas-phase species %s"
-              % (uid))
+        print("Update inlet mixture %s. Setting C6H6 mass fraction to %s"
+              % (uid, value))
 
-    def update_length(self, uid, length):
+    def update_n2_massfrac(self, uid, value):
         """"""
-        print("Update reactor %s. Setting length to %s"
-              % (uid, length))
+        print("Update inlet mixture %s. Setting N2 mass fraction to %s"
+              % (uid, value))
 
-    def update_cross_sect_area(self, uid, cross_sect_area):
+    def update_m_flow(self, uid, value):
         """"""
-        print("Update reactor %s. Setting cross sectional area to %s"
-              % (uid, cross_sect_area))
+        print("Update inlet mixture %s. Setting mass flowrate to %s"
+              % (uid, value))
 
-    def update_temperature(self, uid, temperature):
+    # heterog mixture updates
+    def update_temperature(self, uid, value):
         """"""
-        print("Update reactor %s. Setting temperature to %s"
-              % (uid, temperature))
+        print("Update phase heterogeneous reactive mixture %s. Setting temperature to %s"
+              % (uid, value))
 
-    def update_pressure(self, uid, pressure):
+    def update_pressure(self, uid, value):
         """"""
-        print("Update reactor %s. Setting pressure to %s"
-              % (uid, pressure))
+        print("Update phase heterogeneous reactive mixture %s. Setting pressure to %s"
+              % (uid, value))
 
-    def update_gas_species_conc(self, uid, conc):
+    def update_part_num_dens(self, uid, value):
         """"""
-        print("Updated gas-phase species %s. Setting concentration to %s"
-              % (uid, conc))
+        print("Update phase heterogeneous reactive mixture %s. Setting particle number density to %s"
+              % (uid, value))
 
-    #def get_temperature(self, uid):
-    #   
+    def update_mean_part_size(self, uid, value):
+        """"""
+        print("Update phase heterogeneous reactive mixture %s. Setting mean particle size to %s"
+              % (uid, value))
+
+    def update_part_vol_frac(self, uid, value):
+        """"""
+        print("Update phase heterogeneous reactive mixture %s. Setting particle volume fraction to %s"
+              % (uid, value))
+
+    # cb reactor updates
+    def update_length(self, uid, value):
+        """"""
+        print("Update cb reactor property %s. Setting reactor length to %s"
+              % (uid, value))
+
+    def update_area(self, uid, value):
+        """"""
+        print("Update cb reactor property %s. Setting reactor cross sectional area to %s"
+              % (uid, value))

@@ -12,42 +12,65 @@ class SimCMCLkineticsSession(SimWrapperSession):
 
     # OVERRIDE
     def _apply_added(self, root_obj, buffer):
-        for obj in buffer.values():
-            if obj.is_a(CMCL.GAS_SPECIES):
-                name = obj.name
-                conc = obj.get(oclass=CMCL.CONCENTRATION)[0].value
-                self._engine.add_gas_species(obj.uid, name, conc)
+        pass
 
     # OVERRIDE
     def _apply_updated(self, root_obj, buffer):
         for obj in buffer.values():
-            # check if name has been updated
-            if obj.is_a(CMCL.CONCENTRATION):
-                gas_spec = obj.get(rel=CMCL.IS_PART_OF)[0]
-                self._engine.update_gas_species_conc(gas_spec.uid, obj.value)
+            # update inlet mixture data
+            if obj.is_a(CMCL.C2H2_MASS_FRACTION):
+                inlet_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_c2h2_massfrac(inlet_mixture.uid, obj.value)
 
-            elif obj.is_a(CMCL.LENGTH):
-                cb_reactor = obj.get(rel=CMCL.IS_PART_OF)[0]
-                self._engine.update_length(cb_reactor.uid, obj.value)
+            elif obj.is_a(CMCL.C6H6_MASS_FRACTION):
+                inlet_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_c6h6_massfrac(inlet_mixture.uid, obj.value)
 
-            elif obj.is_a(CMCL.CROSS_SECT_AREA):
-                cb_reactor = obj.get(rel=CMCL.IS_PART_OF)[0]
-                self._engine.update_cross_sect_area(cb_reactor.uid, obj.value)
+            elif obj.is_a(CMCL.N2_MASS_FRACTION):
+                inlet_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_n2_massfrac(inlet_mixture.uid, obj.value)
 
+            elif obj.is_a(CMCL.INLET_MASS_FLOW):
+                inlet_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_m_flow(inlet_mixture.uid, obj.value)
+
+            # update heterog_mixture data
             elif obj.is_a(CMCL.TEMPERATURE):
-                cb_reactor = obj.get(rel=CMCL.IS_PART_OF)[0]
-                self._engine.update_temperature(cb_reactor.uid, obj.value)
+                heterog_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_temperature(heterog_mixture.uid, obj.value)
 
             elif obj.is_a(CMCL.PRESSURE):
-                cb_reactor = obj.get(rel=CMCL.IS_PART_OF)[0]
-                self._engine.update_pressure(cb_reactor.uid, obj.value)
+                heterog_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_pressure(heterog_mixture.uid, obj.value)
+
+            elif obj.is_a(CMCL.PARTICLE_NUMBER_DENSITY):
+                heterog_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_part_num_dens(heterog_mixture.uid, obj.value)
+
+            elif obj.is_a(CMCL.MEAN_PARTICLE_SIZE):
+                heterog_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_mean_part_size(heterog_mixture.uid, obj.value)
+
+            elif obj.is_a(CMCL.PARTICLE_VOLUME_FRACTION):
+                heterog_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_part_vol_frac(heterog_mixture.uid, obj.value)
+
+            # update cb reactor data
+            elif obj.is_a(CMCL.LENGTH):
+                cb_reactor = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_length(cb_reactor.uid, obj.value)
+
+            elif obj.is_a(CMCL.AREA):
+                cb_reactor = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
+                self._engine.update_area(cb_reactor.uid, obj.value)
 
     # OVERRIDE
     def _apply_deleted(self, root_obj, buffer):
         """Deletes the deleted cuds from the engine."""
-        for cuds_object in buffer.values():
-            if cuds_object.is_a(CMCL.GAS_SPECIES):
-                self._engine.remove_gas_species(cuds_object.uid)
+        pass
+        #for cuds_object in buffer.values():
+        #    if cuds_object.is_a():
+        #        self._engine.remove_...(cuds_object.uid)
 
     # OVERRIDE
     #def _initialise(self, root_obj):
