@@ -9,188 +9,144 @@ ontology:
     subclass_of:
     - CUBA.WRAPPER
 
-  ################ Relationships
-
-  ENCLOSES:
-    inverse: CMCL.IS_ENCLOSED_BY
-    subclass_of:
-      - CUBA.ACTIVE_RELATIONSHIP
-
-  IS_ENCLOSED_BY:
-    inverse: CMCL.ENCLOSES
-    subclass_of:
-      - CUBA.PASSIVE_RELATIONSHIP    
-
+  ################ RELATIONSHIPS
   HAS_PART:
     description: "default relationship"
     inverse: CMCL.IS_PART_OF
     subclass_of:
-      - CMCL.ENCLOSES
+      - CUBA.ACTIVE_RELATIONSHIP
 
   IS_PART_OF:
     description: "inverse of the default relationship"
     inverse: CMCL.HAS_PART
     subclass_of:
-      - CMCL.IS_ENCLOSED_BY
+      - CUBA.PASSIVE_RELATIONSHIP
 
-############## entities
+  HAS_PROPER_PARTICIPANT:
+    description: "default relationship"
+    inverse: CMCL.IS_PROPER_PARTICIPANT
+    subclass_of:
+      - CUBA.ACTIVE_RELATIONSHIP
 
-  CB_REACTOR:
+  IS_PROPER_PARTICIPANT:
+    description: "inverse of the default relationship"
+    inverse: CMCL.HAS_PROPER_PARTICIPANT
+    subclass_of:
+      - CUBA.PASSIVE_RELATIONSHIP
+
+  HAS_QUANTITATIVE_PROPERTY:
+    description: "default relationship"
+    inverse: CMCL.IS_QUANTITATIVE_PROPERTY
+    subclass_of:
+      - CUBA.ACTIVE_RELATIONSHIP
+
+  IS_QUANTITATIVE_PROPERTY:
+    description: "inverse of the default relationship"
+    inverse: CMCL.HAS_QUANTITATIVE_PROPERTY
+    subclass_of:
+      - CUBA.PASSIVE_RELATIONSHIP
+
+################ MAIN ENTITIES
+  CB_SYNTHESIS:
+    subclass_of:
+    - CUBA.ENTITY  
+    - CMCL.HAS_PROPER_PARTICIPANT:
+        range: CMCL.INLET_GAS_MIXTURE
+        cardinality: 1
+    - CMCL.HAS_PROPER_PARTICIPANT:
+        range: CMCL.CB_SYNTHESIS_REACTOR
+        cardinality: 1
+    - CMCL.HAS_PROPER_PARTICIPANT:
+        range: CMCL.CB_PRODUCT
+        cardinality: 1
+
+  INLET_GAS_MIXTURE:
+    subclass_of:
+    - CUBA.ENTITY  
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.C2H2_MASS_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.C6H6_MASS_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.N2_MASS_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.INLET_MASS_FLOW
+        cardinality: 1
+
+  CB_SYNTHESIS_REACTOR:
     subclass_of:
     - CUBA.ENTITY
-    - CMCL.HAS_PART:
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.LENGTH
         cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.CROSS_SECT_AREA
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.AREA
         cardinality: 1
     - CMCL.HAS_PART:
+        range: CMCL.PHASE_HETEROGENEOUS_REACTIVE_MIXTURE
+        cardinality: 1
+
+  CB_PRODUCT:
+    subclass_of:
+    - CUBA.ENTITY  
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.CB_PRODUCT_MEAN_PARTICLE_SIZE
+        cardinality: 1
+
+  PHASE_HETEROGENEOUS_REACTIVE_MIXTURE:
+    subclass_of:
+    - CUBA.ENTITY
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.TEMPERATURE
         cardinality: 1
-    - CMCL.HAS_PART:
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.PRESSURE
         cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.REACT_GAS
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.PARTICLE_NUMBER_DENSITY
         cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.FLOWRATE
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.MEAN_PARTICLE_SIZE
         cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.CB_PART
-        cardinality: 1
-
-  MONOLITHIC_REACTOR:
-    subclass_of:
-    - CUBA.ENTITY
-    - CMCL.HAS_PART:
-        range: CMCL.LENGTH
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.DIAMETER
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.CHANNEL_DENSITY
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.WALL_THICKNESS
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.WASHCOAT_THICKNESS
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.CAT_SURF_MULT
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PERMEABILITY
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PORE_DIAMETER
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.WALL_POROSITY
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.TEMPERATURE
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PRESSURE
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.REACT_GAS
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.FLOWRATE
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.CB_PART
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.PARTICLE_VOLUME_FRACTION
         cardinality: 1
 
-  REACT_GAS:
+################ INLET_GAS_MIXTURE QUANTITATIVE PROPERTIES
+  C2H2_MASS_FRACTION:
     subclass_of:
-    - CUBA.ENTITY
-    - CMCL.HAS_PART:
-        range: CMCL.GAS_SPECIES
-        cardinality: some
+    - CMCL.PHYSICAL_QUANTITY
 
-  CB_PART:
+  C6H6_MASS_FRACTION:
     subclass_of:
-    - CUBA.ENTITY
-    - CMCL.HAS_PART:
-        range: CMCL.PART_NUM_DENS
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PART_MEAN_SIZE
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PART_VOL_FRAC
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PART_AVG_FDIM
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PART_SIZE_DISTR
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PRIM_SIZE_DISTR
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PART_SIZE_CLASSES
-        cardinality: 1
-    - CMCL.HAS_PART:
-        range: CMCL.PRIM_SIZE_CLASSES
-        cardinality: 1
+    - CMCL.PHYSICAL_QUANTITY
 
-  GAS_SPECIES:
+  N2_MASS_FRACTION:
     subclass_of:
-    - CUBA.ENTITY
-    - CMCL.HAS_PART:
-        range: CMCL.CONCENTRATION
-        cardinality: 1
-    attributes:
-      CMCL.NAME:
+    - CMCL.PHYSICAL_QUANTITY
 
-  VALUE:
+  INLET_MASS_FLOW:
     subclass_of:
-    - CUBA.ATTRIBUTE
+    - CMCL.PHYSICAL_QUANTITY
 
-  VALUE_N:
-    subclass_of:
-    - CUBA.ATTRIBUTE
-    datatype: VECTOR:20
-
-  UNIT:
-    subclass_of:
-    - CUBA.ATTRIBUTE
-    datatype: STRING
-
-  NAME:
-    subclass_of:
-    - CUBA.ATTRIBUTE
-    datatype: STRING
-
-  PHYSICAL_QUANTITY:
-    subclass_of:
-    - CUBA.ENTITY
-    attributes:
-      CMCL.VALUE:
-      CMCL.UNIT:
-
-  PHYSICAL_QUANTITY_N:
-    subclass_of:
-    - CUBA.ENTITY
-    attributes:
-      CMCL.VALUE_N:
-      CMCL.UNIT:
-  
+################ CB_SYNTHESIS_REACTOR QUANTITATIVE PROPERTIES
   LENGTH:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
-  CROSS_SECT_AREA:
+  AREA:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
+################ CB_PRODUCT QUANTITATIVE PROPERTIES
+  CB_PRODUCT_MEAN_PARTICLE_SIZE:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+################ PHASE_HETEROGENEOUS_REACTIVE_MIXTURE QUANTITATIVE PROPERTIES
   TEMPERATURE:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
@@ -199,74 +155,31 @@ ontology:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
-  CONCENTRATION:
+  PARTICLE_NUMBER_DENSITY:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
-  FLOWRATE:
+  MEAN_PARTICLE_SIZE:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
-  PART_NUM_DENS:
+  PARTICLE_VOLUME_FRACTION:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
-  PART_MEAN_SIZE:
+################ PHYSICAL_QUANTITY
+  PHYSICAL_QUANTITY:
     subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
+    - CUBA.ENTITY
+    attributes:
+      CMCL.VALUE:
+      CMCL.UNIT:
 
-  PART_VOL_FRAC:
+  VALUE:
     subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
+    - CUBA.ATTRIBUTE
 
-  PART_AVG_FDIM:
+  UNIT:
     subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
-  PART_SIZE_DISTR:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY_N
-    
-  PRIM_SIZE_DISTR:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY_N
-
-  PART_SIZE_CLASSES:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY_N
-
-  PRIM_SIZE_CLASSES:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY_N
-
-  DIAMETER:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
-  CHANNEL_DENSITY:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
-  WALL_THICKNESS:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
-  WASHCOAT_THICKNESS:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
-  CAT_SURF_MULT:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
-  PERMEABILITY:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-    
-  PORE_DIAMETER:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
-  WALL_POROSITY:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
+    - CUBA.ATTRIBUTE
+    datatype: STRING
