@@ -1,0 +1,53 @@
+QUESTION 1
+----------
+Why is the object being passed to another class to have it's value updated (it could quite
+easily be done here)? Additionally, the existing value (pulled from obj.value) is being used
+as the value to-be-set (i.e. this seems to just set the same value again).
+
+
+QUESTION 2
+----------
+Is an if statement needed for each mass fraction when the action in each case is the same?
+Could a parent MASS_FRACTION be added to the ontology to catch all of these cases in a single
+statement?
+
+
+QUESTION 3
+----------
+At this point, have the mass fractions already been added to the inlet mixture? If so, then
+what's the purpose of searching for the inlet mixture object?
+
+
+QUESTION 4
+----------
+Are we going to have a different SimulationEngine for each simulation template? The current
+example is setup for some very specific parameters.
+
+
+QUESTION 5
+----------
+How is data entering this system? At some point, we must let the calling code know what simulation
+templates are available for use. Once the user has selected one, presumably we then return the input.json
+content to them in some form (allowing them to edit the values of the permitted parameters). What I don't
+understand here is the use of the ontologies, are they solely being used to generate the CUDS structure?
+
+
+QUESTION 6
+----------
+Why are the CUDS objects passed to another class for a very simple value change? Could it not be done in the
+session class? Alternatively, could it be done in a separate 'setter' class? Updating values and the handling
+for contacting the KineticsAgent should probably be split into separate classes.
+
+
+QUESTION 7
+----------
+How is the final output data reported to the calling code (i.e. the user). I cannot see a way to notify the calling
+code that the simulation has completed. No knowledge of outputs seems to be present in the ontology so I assume
+that they aren't simply added to the CUDS structure, is there some function that needs to be called with them
+as an argument?
+
+
+QUESTION 8
+---------
+If the user selects stupid values for their input parameters, are we providing any method to return the details listed
+in the SRM log file to them? Is there any way to let users know why their simulation failed?

@@ -1,24 +1,44 @@
+# Import CUDS objects generated from CMCL ontology
 from osp.core import CMCL
+
+# Import generic wrapper class from OSP core
 from osp.core.session import SimWrapperSession
+
+# Import CMCL SimulationEngine class
 from osp.wrappers.simcmclkinetics import SimulationEngine
 
+
+# Class to represent a single session of the wrapper (i.e. the process handling
+# setup, execution, and retrieval of output data).
+#
+# Subclass of generic wrapper class SimWrapperSession (in OSP Core)
 class SimCMCLkineticsSession(SimWrapperSession):
-    """    """
+    
+    # Initialises parent using a new SimulationEngine instance if none is supplied.
     def __init__(self, engine=None, **kwargs):
         super().__init__(engine or SimulationEngine(), **kwargs)
 
+    # Return string representation
     def __str__(self):
-        return "CMCL kinetics wrapper session"
+        return "CMCL Kinetics wrapper session"
 
-    # OVERRIDE
+    # Overridden (does nothing)
+    # Parent: Add the added cuds_objects to the engine
     def _apply_added(self, root_obj, buffer):
+        # I suppose this method should be used if we need to add CUDS
+        # objects to other CUDS objects?
         pass
 
-    # OVERRIDE
+    # Overridden
+    # Parent: Update the updated cuds_objects in the engine
     def _apply_updated(self, root_obj, buffer):
+
+        # Loop through each object in the buffer
         for obj in buffer.values():
-            # update inlet mixture data
-            if obj.is_a(CMCL.C2H2_MASS_FRACTION):
+
+            # If the object is a mass fraction, update its value
+            # QUESTION 1, QUESTION 2, QUESTION 3
+            if obj.is_a(CMCL.C2H2_MASS_FRACTION):         
                 inlet_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
                 self._engine.update_c2h2_massfrac(inlet_mixture.uid, obj.value)
 
@@ -34,7 +54,8 @@ class SimCMCLkineticsSession(SimWrapperSession):
                 inlet_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
                 self._engine.update_m_flow(inlet_mixture.uid, obj.value)
 
-            # update heterog_mixture data
+            # If the object is a physical quantity of the heterogenous mixture,
+            # update its value
             elif obj.is_a(CMCL.TEMPERATURE):
                 heterog_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
                 self._engine.update_temperature(heterog_mixture.uid, obj.value)
@@ -55,7 +76,7 @@ class SimCMCLkineticsSession(SimWrapperSession):
                 heterog_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
                 self._engine.update_part_vol_frac(heterog_mixture.uid, obj.value)
 
-            # update cb reactor data
+            # Update the physical properties of the Carbon Black reactor
             elif obj.is_a(CMCL.LENGTH):
                 cb_reactor = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
                 self._engine.update_length(cb_reactor.uid, obj.value)
@@ -64,20 +85,14 @@ class SimCMCLkineticsSession(SimWrapperSession):
                 cb_reactor = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
                 self._engine.update_area(cb_reactor.uid, obj.value)
 
-    # OVERRIDE
+    # Overrriden
+    # Parent: Deletes the deleted cuds from the engine.
     def _apply_deleted(self, root_obj, buffer):
-        """Deletes the deleted cuds from the engine."""
+        # If we need do, delete objects from the CUDS structure here
         pass
-        #for cuds_object in buffer.values():
-        #    if cuds_object.is_a():
-        #        self._engine.remove_...(cuds_object.uid)
 
-    # OVERRIDE
-    #def _initialise(self, root_obj):
-    #    """ if initialisation is needed"""
-    #    pass
-
-    # OVERRIDE
+    # Overriden
+    # Parent: Load cuds_object with given uids from the database
     def _load_from_backend(self, uids, expired=None):
         for uid in uids:
             if uid in self._registry:
@@ -85,8 +100,9 @@ class SimCMCLkineticsSession(SimWrapperSession):
             else:
                 yield None
 
-    # OVERRIDE
+    # Override
+    # Parent: Run the engine
     def _run(self, root_cuds_object):
-        print("here you call the run method in the engine")
+        self._engine.run()
 
             
