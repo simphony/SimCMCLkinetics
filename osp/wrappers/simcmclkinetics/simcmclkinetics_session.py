@@ -1,4 +1,5 @@
 # Import CUDS objects generated from CMCL ontology
+# pylint: disable=no-name-in-module
 from osp.core import CMCL
 
 # Import generic wrapper class from OSP core
@@ -13,7 +14,7 @@ from osp.wrappers.simcmclkinetics import SimulationEngine
 #
 # Subclass of generic wrapper class SimWrapperSession (in OSP Core)
 class SimCMCLkineticsSession(SimWrapperSession):
-    
+
     # Initialises parent using a new SimulationEngine instance if none is supplied.
     def __init__(self, engine=None, **kwargs):
         super().__init__(engine or SimulationEngine(), **kwargs)
@@ -38,7 +39,7 @@ class SimCMCLkineticsSession(SimWrapperSession):
 
             # If the object is a mass fraction, update its value
             # QUESTION 1, QUESTION 2, QUESTION 3
-            if obj.is_a(CMCL.C2H2_MASS_FRACTION):         
+            if obj.is_a(CMCL.C2H2_MASS_FRACTION):
                 inlet_mixture = obj.get(rel=CMCL.IS_QUANTITATIVE_PROPERTY)[0]
                 self._engine.update_c2h2_massfrac(inlet_mixture.uid, obj.value)
 
@@ -104,5 +105,3 @@ class SimCMCLkineticsSession(SimWrapperSession):
     # Parent: Run the engine
     def _run(self, root_cuds_object):
         self._engine.run()
-
-            

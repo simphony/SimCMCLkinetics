@@ -1,21 +1,29 @@
+# Class that actually handles the technical aspects of setting up, submitting,
+# and returning the generated output from an SRM driver job.
 class SimulationEngine:
-    """
-    CMCL kinetics engine code.
-    """
 
+    # Constructor
     def __init__(self):
         self.executed = False
         print("Engine instantiated!")
 
+    # Textual representation
     def __str__(self):
         return "Some Engine Connection"
 
+    # Executes the simulation
+    # Does this need a 'currentlyExecuting' variable to prevent multiple calls?
     def run(self):
-        """Call the run command of the engine."""
-        print("Now the engine is running")
+
+        # TODO - Build the JSON string from the CUDS objects
+        # TODO - Submit HTTP request to KineticsAgent
+        # TODO - Store job ID returned by the KineticsAgent
+        # TODO - Wait until the KineticsAgent finishes that job
+        # TODO - Store output data from the KineticsAgent
+        # TODO - Organise output data into CUDS objects???
+
         self.executed = True
 
-    # inlet mixture updates
     def update_c2h2_massfrac(self, uid, value):
         """"""
         print("Update inlet mixture %s. Setting C2H2 mass fraction to %s"

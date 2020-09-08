@@ -1,4 +1,5 @@
 # Import CUDS objects generated from CMCL ontology
+# pylint: disable=no-name-in-module
 from osp.core import CMCL
 
 # Import the session wrapper
@@ -10,7 +11,7 @@ import osp.core.utils.simple_search as search
 
 # Create main entities using CUDS objects generated from the sample CMCL ontology
 cb_synthesis = CMCL.CB_SYNTHESIS()
-inlet_mixture = CMCL.STEVE()
+inlet_mixture = CMCL.INLET_GAS_MIXTURE()
 cb_reactor = CMCL.CB_SYNTHESIS_REACTOR()
 heterog_mixture = CMCL.PHASE_HETEROGENEOUS_REACTIVE_MIXTURE()
 
