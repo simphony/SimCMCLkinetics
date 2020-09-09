@@ -52,6 +52,8 @@ with SimCMCLkineticsSession() as s:
     cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
     wrapper.session.run()
 
+    #######  
+    
     # Last minute edit to the C2H2 mass fraction
     gas_species = search.find_cuds_objects_by_oclass(CMCL.C2H2_MASS_FRACTION, cb_synthesis_w, rel=None)[0]
     gas_species.value = 0.04

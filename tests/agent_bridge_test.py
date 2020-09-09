@@ -59,22 +59,21 @@ class AgentBridgeTest(unittest.TestCase):
         self.assertEqual(url, expectedURL)
         
 
-    def test_submitJob(self):
-        """Tests if a job can be submitted via HTTP requests using the
-        submitJob() function of the AgentBridge class. Note that this test
-        WILL fail if the AgentBridge has an incorrect BASE_URL variable, or the
-        HTTP server at that URL is not operational.
+    def test_runJob(self):
+        """Tests if a job can be run via HTTP requests using the runJob() function of the AgentBridge class.
+        Note that this test WILL fail if the AgentBridge has an incorrect BASE_URL variable, or the HTTP
+        server at that URL is not operational.
         """
-        print("\nRunning test_submitJob()...")
+        self.agentBridge.jobID = None
 
         # Load the input JSON string for testing
         with open(os.path.join(sys.path[0], "test_input.json"), "r") as file:
             jsonString = file.read().replace("\n", "")
 
-        # Try to submit a job using the AgentBridge
-        result = self.agentBridge.submitJob(jsonString)
-        self.assertTrue(result)
-        self.assertFalse(self.agentBridge.jobID == None)
+        # Try to run the job
+        result = self.agentBridge.runJob(jsonString)
+
+        self.assertFalse(result == None)
 
 
 if __name__ == '__main__':

@@ -1,82 +1,71 @@
-# Class that actually handles the technical aspects of setting up, submitting,
-# and returning the generated output from an SRM driver job.
+# Import AgentBridge class
+from osp.wrappers.simcmclkinetics import AgentBridge
+
+# Import CUDSAdaptor class
+from osp.wrappers.simcmclkinetics import CUDSAdaptor
+
+import json
+
 class SimulationEngine:
+    """Central class that manages setting up, executing, and parsing outputs from
+    a kinetics simulation.
+    """
 
-    # Constructor
+    
     def __init__(self):
-        self.executed = False
-        print("Engine instantiated!")
+        """Initialise a new SimulationEngine instance.
+        """
+        print("SimulationEngine instantiated!")
 
-    # Textual representation
+
     def __str__(self):
-        return "Some Engine Connection"
+        """Textual representation.
 
-    # Executes the simulation
-    # Does this need a 'currentlyExecuting' variable to prevent multiple calls?
-    def run(self):
+        Returns:
+            Textual representation.
+        """
+        return "CMCL SimulationEngine"
 
-        # TODO - Build the JSON string from the CUDS objects
-        # TODO - Submit HTTP request to KineticsAgent
-        # TODO - Store job ID returned by the KineticsAgent
-        # TODO - Wait until the KineticsAgent finishes that job
-        # TODO - Store output data from the KineticsAgent
-        # TODO - Organise output data into CUDS objects???
 
+    def run(self, root_cuds_object):
+        """Sets up, executes, and parses outputs from a remote kinetics simulation.
+
+        Arguments:
+            root_cuds_object -- Root CUDS object representing input data
+        """
+        self.executed = False
+
+        # TODO - Determine template from root CUDS object
+        simulation_template = self.determineTemplate(root_cuds_object)
+
+        # TODO - Build the JSON data from the CUDS objects (via CUDSTranslator)
+        jsonData = CUDSAdaptor.toJSON(root_cuds_object, simulation_template)
+
+        # TODO - Run remote simulation (via AgentBridge)
+        agentBridge = AgentBridge()
+        jsonResult = agentBridge.runJob(json.dumps(jsonData))
+
+        if(jsonResult == None):
+            # TODO - Return error somehow
+            self.executed = True
+
+        # TODO - Populate CUDS from JSON results (via JSONTranslator)
+        CUDSAdaptor.toCUDS(jsonResult, root_cuds_object)
+
+        # Mark as complete
         self.executed = True
 
-    def update_c2h2_massfrac(self, uid, value):
-        """"""
-        print("Update inlet mixture %s. Setting C2H2 mass fraction to %s"
-              % (uid, value))
 
-    def update_c6h6_massfrac(self, uid, value):
-        """"""
-        print("Update inlet mixture %s. Setting C6H6 mass fraction to %s"
-              % (uid, value))
+    def determineTemplate(self, root_cuds_object):
+        """Determines which simulation template to use based on the input 
+        CUDS data.
 
-    def update_n2_massfrac(self, uid, value):
-        """"""
-        print("Update inlet mixture %s. Setting N2 mass fraction to %s"
-              % (uid, value))
+        Arguments:
+            root_cuds_object -- Root CUDS object representing input data
 
-    def update_m_flow(self, uid, value):
-        """"""
-        print("Update inlet mixture %s. Setting mass flowrate to %s"
-              % (uid, value))
+        Returns:
+            Appropriate simulation template name (or index?)
+        """
 
-    # heterog mixture updates
-    def update_temperature(self, uid, value):
-        """"""
-        print("Update phase heterogeneous reactive mixture %s. Setting temperature to %s"
-              % (uid, value))
-
-    def update_pressure(self, uid, value):
-        """"""
-        print("Update phase heterogeneous reactive mixture %s. Setting pressure to %s"
-              % (uid, value))
-
-    def update_part_num_dens(self, uid, value):
-        """"""
-        print("Update phase heterogeneous reactive mixture %s. Setting particle number density to %s"
-              % (uid, value))
-
-    def update_mean_part_size(self, uid, value):
-        """"""
-        print("Update phase heterogeneous reactive mixture %s. Setting mean particle size to %s"
-              % (uid, value))
-
-    def update_part_vol_frac(self, uid, value):
-        """"""
-        print("Update phase heterogeneous reactive mixture %s. Setting particle volume fraction to %s"
-              % (uid, value))
-
-    # cb reactor updates
-    def update_length(self, uid, value):
-        """"""
-        print("Update cb reactor property %s. Setting reactor length to %s"
-              % (uid, value))
-
-    def update_area(self, uid, value):
-        """"""
-        print("Update cb reactor property %s. Setting reactor cross sectional area to %s"
-              % (uid, value))
+        # TODO - Implementation
+        return 1

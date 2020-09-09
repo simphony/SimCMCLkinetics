@@ -48,6 +48,12 @@ as an argument?
 
 
 QUESTION 8
----------
+----------
 If the user selects stupid values for their input parameters, are we providing any method to return the details listed
 in the SRM log file to them? Is there any way to let users know why their simulation failed?
+
+
+
+QUESTION 9
+----------
+What timeout should be used when waiting for submitted jobs to finish?

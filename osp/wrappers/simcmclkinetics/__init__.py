@@ -1,3 +1,4 @@
 from osp.wrappers.simcmclkinetics.simulation_engine import SimulationEngine
 from osp.wrappers.simcmclkinetics.simcmclkinetics_session import SimCMCLkineticsSession
 from osp.wrappers.simcmclkinetics.agent_bridge import AgentBridge
+from osp.wrappers.simcmclkinetics.cuds_adaptor import CUDSAdaptor
