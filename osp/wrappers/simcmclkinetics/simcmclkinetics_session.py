@@ -41,3 +41,44 @@ class SimCMCLkineticsSession(SimWrapperSession):
             root_cuds_object -- Root CUDS object representing input data
         """
         self._engine.run()
+
+    
+    def _apply_added(self, root_obj, buffer):
+        """Not used in the this concrete wrapper.
+
+        Args:
+            root_obj (Cuds): The wrapper cuds object
+            buffer (Dict[UUID, Cuds]): All Cuds objects that have been added
+        """
+        pass
+
+
+    def _apply_updated(self, root_obj, buffer):
+        """Not used in the this concrete wrapper.
+
+        Args:
+            root_obj (Cuds): The wrapper cuds object
+            buffer (Dict[UUID, Cuds]): All Cuds objects that have been updated
+        """
+        pass
+
+
+    def _apply_deleted(self, root_obj, buffer):
+        """Not used in the this concrete wrapper.
+
+        Args:
+            root_obj (Cuds): The wrapper cuds object.
+            buffer (Dict[UUID, Cuds]): All Cuds objects that have been deleted
+        """
+        pass
+
+    
+    def _load_from_backend(self, uids, expired=None):
+        """Not used in the this concrete wrapper.
+
+        :param uids: List of uids to load
+        :type uids: List[UUID]
+        :param expired: Which of the cuds_objects are expired.
+        :type expired: Set[UUID]
+        """
+        pass
