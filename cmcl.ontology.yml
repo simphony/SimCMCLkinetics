@@ -86,7 +86,7 @@ ontology:
         range: CMCL.N2_FRACTION
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.INLET_MASS_FLOW
+        range: CMCL.MASS_FLOW_RATE
         cardinality: 1
     attributes:
       CMCL.UNIT:
@@ -98,7 +98,7 @@ ontology:
         range: CMCL.LENGTH
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.DIAMETER
+        range: CMCL.CROSS_SECTION
         cardinality: 1
     - CMCL.HAS_PART:
         range: CMCL.PHASE_HETEROGENEOUS_REACTIVE_MIXTURE
@@ -166,7 +166,7 @@ ontology:
     subclass_of:
     - CUBA.ENTITY  
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.INLET_MASS_FLOW
+        range: CMCL.MASS_FLOW_RATE
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.TEMPERATURE
@@ -197,7 +197,7 @@ ontology:
         range: CMCL.LENGTH
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.DIAMETER
+        range: CMCL.CROSS_SECTION
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.CHANNEL_DENSITY
@@ -229,7 +229,7 @@ ontology:
         range: CMCL.LENGTH
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.DIAMETER
+        range: CMCL.CROSS_SECTION
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.CHANNEL_DENSITY
@@ -268,7 +268,7 @@ ontology:
     - CMCL.PHYSICAL_QUANTITY
 
 # INLET_GAS, UNTREATED_EXHAUST
-  INLET_MASS_FLOW:
+  MASS_FLOW_RATE:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
@@ -277,7 +277,7 @@ ontology:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
-  DIAMETER:
+  CROSS_SECTION:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 

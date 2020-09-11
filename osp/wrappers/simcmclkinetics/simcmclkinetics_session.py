@@ -33,14 +33,18 @@ class SimCMCLkineticsSession(SimWrapperSession):
         """
         return "CMCL Kinetics wrapper session"
 
-    
+    def forceRun(self, root_cuds_object):
+        """Public testing method to foricbly run this instance.
+        """
+        self._run(root_cuds_object)
+
     def _run(self, root_cuds_object):
         """Run the engine to execute a kinetics simulation.
 
         Arguments:
             root_cuds_object -- Root CUDS object representing input data
         """
-        self._engine.run()
+        self._engine.run(root_cuds_object)
 
     
     def _apply_added(self, root_obj, buffer):
