@@ -11,6 +11,9 @@ from osp.wrappers.simcmclkinetics import CUDSAdaptor
 # CUDS search functionality
 import osp.core.utils.simple_search as search
 
+# Pretty print
+from osp.core.utils import pretty_print
+
 import json
 
 class SimulationEngine:
@@ -42,27 +45,30 @@ class SimulationEngine:
         """
         self.executed = False
 
-        # TODO - Determine template from root CUDS object
+        # Determine template from root CUDS object
         simulation_template = self.determineTemplate(root_cuds_object)
         print("Detected simulation template as %s" % (simulation_template))
 
-        # TODO - Build the JSON data from the CUDS objects (via CUDSTranslator)
+        # Build the JSON data from the CUDS objects (via CUDSTranslator)
         jsonData = CUDSAdaptor.toJSON(simulation_template, root_cuds_object)
+            
+        # Run remote simulation (via AgentBridge)
+        agentBridge = AgentBridge()
+        jsonResult = agentBridge.runJob(json.dumps(jsonData))
 
-        # TODO - Run remote simulation (via AgentBridge)
-        #agentBridge = AgentBridge()
-        #jsonResult = agentBridge.runJob(json.dumps(jsonData))
+        if(jsonResult == None):
+            # TODO- Return error somehow?
+            self.executed = True
 
-        #if(jsonResult == None):
-        #    # TODO - Return error somehow
-        #    self.executed = True
+        # Populate CUDS from JSON results (via JSONTranslator)
+        CUDSAdaptor.toCUDS(jsonResult, root_cuds_object)
 
-        # TODO - Populate CUDS from JSON results (via JSONTranslator)
-        #CUDSAdaptor.toCUDS(jsonResult, root_cuds_object)
+        # Print final CUDS objects for testing
+        pretty_print(root_cuds_object)
 
         # Mark as complete
         self.executed = True
-
+        
 
     def determineTemplate(self, root_cuds_object) -> str:
         """Determines which simulation template to use based on the input 

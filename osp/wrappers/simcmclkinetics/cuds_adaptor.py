@@ -74,32 +74,29 @@ class CUDSAdaptor:
             return
 
         # Is the quantity part of a gas mixture AND has no unit (if so, special handling)
-        mixture = search.find_cuds_objects_by_oclass(
+        inletgas = search.find_cuds_objects_by_oclass(
                 CMCL.INLET_GAS,
                 quantity,
-                rel=CMCL.IS_QUANTITATIVE_PROPERTY)
+                rel=CMCL.IS_QUANTITATIVE_PROPERTY)  
 
-        special_case = (unit == "-") and (mixture is not None and len(mixture) == 1)
+        special_case = (unit == "-") and (inletgas is not None and len(inletgas) == 1)
 
         if not special_case:
-            name = "INP_" + quantity.oclass.name
+            name = "$INP_" + quantity.oclass.name
             unit = quantity.unit
 
             dict[name + "_VALUE"] = value
             dict[name + "_UNIT"] = unit
 
-            if "PARTICLE_SIZE" in name:
-                print("TYPE FOR %s IS %s" % (name, type(value)))
-
         else:
-            name = "INP_MIX_COMP_" + quantity.oclass.name
+            name = "$INP_MIX_COMP_" + quantity.oclass.name
             value = quantity.value
 
             dict[name] = value
 
             # Register the mixture unit too
-            mixtureunit = mixture[0].unit
-            dict["INP_MIX_COMP_UNIT"] = mixtureunit
+            mixtureunit = inletgas[0].unit
+            dict["$INP_MIX_COMP_UNIT"] = mixtureunit
             
 
     @staticmethod
@@ -111,7 +108,7 @@ class CUDSAdaptor:
             quantity -- output quantity
         """
         name = quantity.oclass.name
-        outputs.append(name)
+        outputs.append("$" + name)
             
  
     @staticmethod
@@ -120,8 +117,35 @@ class CUDSAdaptor:
         will populate the input CUDS objects with that output data.
 
         Arguments:
-            jsonData         -- JSON data representing outputs
-            root_cuds_object -- Root of CUDS object representing inputs
+            jsonData           -- JSON data representing outputs
+            root_cuds_object   -- Root CUDS object
         """
+        # For each output in the returned JSON
+        for output_key in jsonData:
+            name = output_key[1:]
+            unit = jsonData[output_key]["unit"]
+            value = jsonData[output_key]["value"]
 
-        # TODO - Implementation
+            # Find the corresponding CUDS output
+            cuds_output = CUDSAdaptor.nameMatch(root_cuds_object, name)
+
+            # Store returned unit and value
+            if cuds_output is not None:
+                print("Settings values for %s" % (name))
+                cuds_output.unit = unit
+                cuds_output.value = str(value).strip("[]")
+            else:
+                print("COULD NOT FIND OUTPUT %s" % (name))
+
+
+    @staticmethod
+    def nameMatch(root_cuds_object, name):
+        """
+        """
+        outputs = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_QUANTITY, root_cuds_object, rel=None)
+       
+        for sub in outputs:
+            if sub.oclass.name == name:
+                return sub
+    
+        return None

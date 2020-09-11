@@ -86,6 +86,28 @@ ontology:
         range: CMCL.N2_FRACTION
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.C3H6_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.CO_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.NO_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.NO2_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.O2_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.H2O_FRACTION
+        cardinality: 1
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
+        range: CMCL.CO2_FRACTION
+        cardinality: 1
+
+    - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.MASS_FLOW_RATE
         cardinality: 1
     attributes:
@@ -142,6 +164,43 @@ ontology:
     - CMCL.HAS_OUTPUT_PROPERTY:
         range: CMCL.OUT_PART_VOLFRAC
         cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PART_SIZE_DISTR_Y
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PART_SIZE_DISTR_X
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PRIM_SIZE_DISTR_Y
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PRIM_SIZE_DISTR_X
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PART_AVG_FRACT_DIM
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PM_IN
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PM_OUT
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PN_IN
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_PN_OUT
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_NO_OUT
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_CO_OUT
+        cardinality: 1
+    - CMCL.HAS_OUTPUT_PROPERTY:
+        range: CMCL.OUT_C3H6_OUT
+        cardinality: 1
+
 
 ################ MAIN EAT ENTITIES ###############
 #================================================#
@@ -175,10 +234,10 @@ ontology:
         range: CMCL.PRESSURE
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.COMPOSITION
+        range: CMCL.PSD
         cardinality: 1
-    - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.PARTICLE_SIZE_DISTRIBUTION
+    - CMCL.HAS_PROPER_PARTICIPANT:
+        range: CMCL.INLET_GAS
         cardinality: 1
 
 ##### TREATED_EXHAUST QUANTITATIVE PROPERTIES
@@ -186,7 +245,7 @@ ontology:
     subclass_of:
     - CUBA.ENTITY  
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.PARTICLE_SIZE_DISTRIBUTION
+        range: CMCL.PSD
         cardinality: 1
 
 ##### TWC QUANTITATIVE PROPERTIES
@@ -206,7 +265,7 @@ ontology:
         range: CMCL.WALL_THICKNESS
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.CATALYST_SURF_MULT
+        range: CMCL.CATALYST_SURFACE_MULT
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.WASHCOAT_THICKNESS
@@ -229,7 +288,7 @@ ontology:
         range: CMCL.LENGTH
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
-        range: CMCL.CROSS_SECTION
+        range: CMCL.DIAMETER
         cardinality: 1
     - CMCL.HAS_QUANTITATIVE_PROPERTY:
         range: CMCL.CHANNEL_DENSITY
@@ -267,6 +326,35 @@ ontology:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
+  O2_FRACTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  C3H6_FRACTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  CO_FRACTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  NO_FRACTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  NO2_FRACTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  H2O_FRACTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  CO2_FRACTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+  
+
 # INLET_GAS, UNTREATED_EXHAUST
   MASS_FLOW_RATE:
     subclass_of:
@@ -278,6 +366,10 @@ ontology:
     - CMCL.PHYSICAL_QUANTITY
 
   CROSS_SECTION:
+    subclass_of:
+    - CMCL.PHYSICAL_QUANTITY
+
+  DIAMETER:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
@@ -304,13 +396,8 @@ ontology:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
-# UNTREATED_EXHAUST
-  COMPOSITION:
-    subclass_of:
-    - CMCL.PHYSICAL_QUANTITY
-
 # UNTREATED_EXHAUST, TREATED_EXHAUST, PHASE_HETEROGENEOUS_REACTIVE_MIXTURE
-  PARTICLE_SIZE_DISTRIBUTION:
+  PSD:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
@@ -345,7 +432,7 @@ ontology:
     - CMCL.PHYSICAL_QUANTITY
 
   # TWC
-  CATALYST_SURF_MULT:
+  CATALYST_SURFACE_MULT:
     subclass_of:
     - CMCL.PHYSICAL_QUANTITY
 
@@ -375,6 +462,54 @@ ontology:
     - CMCL.OUTPUT_QUANTITY
 
   OUT_PART_VOLFRAC:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_PART_SIZE_DISTR_Y:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_PART_SIZE_DISTR_X:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_PRIM_SIZE_DISTR_Y:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+  
+  OUT_PRIM_SIZE_DISTR_X:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_PART_AVG_FRACT_DIM:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_PM_IN:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_PM_OUT:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+  
+  OUT_PN_IN:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_PN_OUT:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_NO_OUT:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+  
+  OUT_CO_OUT:
+    subclass_of:
+    - CMCL.OUTPUT_QUANTITY
+
+  OUT_C3H6_OUT:
     subclass_of:
     - CMCL.OUTPUT_QUANTITY
 
