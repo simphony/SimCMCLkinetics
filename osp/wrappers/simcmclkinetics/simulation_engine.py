@@ -17,8 +17,8 @@ from osp.core.utils import pretty_print
 import json
 
 class SimulationEngine:
-    """Central class that manages setting up, executing, and parsing outputs from
-    a kinetics simulation.
+    """Central class that manages setting up, executing, and parsing outputs
+    from a kinetics simulation.
     """
 
     
@@ -57,14 +57,15 @@ class SimulationEngine:
         jsonResult = agentBridge.runJob(json.dumps(jsonData))
 
         if(jsonResult == None):
-            # TODO- Return error somehow?
+            # TODO- Return error somehow, populate special error
+            # CUDS object?
             self.executed = True
 
         # Populate CUDS from JSON results (via JSONTranslator)
         CUDSAdaptor.toCUDS(jsonResult, root_cuds_object)
 
         # Print final CUDS objects for testing
-        pretty_print(root_cuds_object)
+        #pretty_print(root_cuds_object)
 
         # Mark as complete
         self.executed = True
@@ -80,6 +81,13 @@ class SimulationEngine:
         Returns:
             Appropriate simulation template name 
         """
+
+        # NOTE - This should probably be done by adding a template name object
+        # to the ontology then reading that from the CUDS data. This method
+        # forces me to add instances to the CUDS data that are not required
+        # for the input JSON request (so I have to generate dummy data, then 
+        # detect and remove it later).
+        
         twc = search.find_cuds_objects_by_oclass(CMCL.TWC, root_cuds_object, rel=None)
         gpf = search.find_cuds_objects_by_oclass(CMCL.GPF, root_cuds_object, rel=None)
         cb = search.find_cuds_objects_by_oclass(CMCL.CB_SYNTHESIS_REACTOR, root_cuds_object, rel=None)

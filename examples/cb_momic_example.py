@@ -11,8 +11,6 @@ from osp.core import CMCL
 # Import the session wrapper
 from osp.wrappers.simcmclkinetics import SimCMCLkineticsSession
 
-from osp.core.utils import pretty_print
-
 # Replicate the inputs.json of the use case; note that these values
 # were taken from the following kinetics-backend commit:
 # 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
@@ -59,7 +57,6 @@ outputs.add(
     CMCL.OUT_PART_VOLFRAC(),
     rel=CMCL.HAS_PART)
 
-
 # Add the heterogeneous mixture to the reactor
 cb_reactor.add(heterog_mixture, rel=CMCL.HAS_PART)
 
@@ -78,9 +75,13 @@ cb_synthesis.add(outputs, rel=CMCL.HAS_PART)
 
 # Construct a wrapper and run a new session
 with SimCMCLkineticsSession() as session:
-    # TODO - Using the wrapper class appears to cause an error in OSP Core
+    # TODO - Using the wrapper class here should be the proper solution,
+    # but it appears to cause an error in OSP core that I'm not 100%
+    # sure is due to something in the CMCL code.
+
     #wrapper = CMCL.wrapper(session=session)
     #cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
     #wrapper.session.run()
 
+    # Forcibly start the session
     session.forceRun(cb_synthesis)

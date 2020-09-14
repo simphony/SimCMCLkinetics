@@ -11,8 +11,6 @@ from osp.core import CMCL
 # Import the session wrapper
 from osp.wrappers.simcmclkinetics import SimCMCLkineticsSession
 
-from osp.core.utils import pretty_print
-
 # Replicate the inputs.json of the use case; note that these values
 # were taken from the following kinetics-backend commit:
 # 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
@@ -30,15 +28,10 @@ gpf.add(
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY
 )
 
-# Composition
-composition = CMCL.INLET_GAS(unit="mole fraction")
-composition.add(
-    CMCL.O2_FRACTION(value=0.0077, unit="-"),
-    CMCL.N2_FRACTION(value=0.97665, unit="-"),
-    rel=CMCL.HAS_QUANTITATIVE_PROPERTY
-)
-
 # Multi-value as single string (fudge)
+# NOTE - Looks like initialising this as a proper python multi-line
+# string introduces additional line breaks (which would break the JSON),
+# so you're getting a wide string.
 psd_value = "0.0 \n 0.0 \n 0.0 \n 0.0 \n 0.0 \n 717336335.4961826 \n 1136584354.379982 \n 924227815.950944 \n 845311534.7779906 \n 356410402.48458695 \n 85584073.91376975 \n 987972758.5775461 \n 709085997.0099192 \n 266943816.34198743 \n 4915598091.457544 \n 7297012929.206079 \n 2787390572.980519 \n 148122061.65184438 \n 0.0 \n 0.0"
 
 # Initialise the exhaust
@@ -49,6 +42,14 @@ untreated_exhaust.add(
     CMCL.TEMPERATURE(value=719.1521765499999, unit="K"),
     CMCL.PRESSURE(value=97835.26926, unit="Pa"),
     CMCL.PSD(value=psd_value, unit="#/kg"),
+    rel=CMCL.HAS_QUANTITATIVE_PROPERTY
+)
+
+# Composition
+composition = CMCL.INLET_GAS(unit="mole fraction")
+composition.add(
+    CMCL.O2_FRACTION(value=0.0077, unit="-"),
+    CMCL.N2_FRACTION(value=0.97665, unit="-"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY
 )
 
@@ -82,9 +83,13 @@ eat_process.add(outputs, rel=CMCL.HAS_PART)
 
 # Construct a wrapper and run a new session
 with SimCMCLkineticsSession() as session:
-    # TODO - Using the wrapper class appears to cause an error in OSP Core
+    # TODO - Using the wrapper class here should be the proper solution,
+    # but it appears to cause an error in OSP core that I'm not 100%
+    # sure is due to something in the CMCL code.
+
     #wrapper = CMCL.wrapper(session=session)
     #cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
     #wrapper.session.run()
 
+    # Forcibly start the session
     session.forceRun(eat_process)

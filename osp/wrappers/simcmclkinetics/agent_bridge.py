@@ -12,7 +12,7 @@ class AgentBridge:
     POLL_INTERVAL = 30
 
     # Maximum number of requests when waiting for jobs to finish
-    MAX_ATTEMPTS = 20
+    MAX_ATTEMPTS = 60
 
     # Base URL for HTTP requests
     BASE_URL = "http://localhost:8088/KineticsAgent/job/"
@@ -41,10 +41,12 @@ class AgentBridge:
         submitted = self.submitJob(jsonString)
 
         if(submitted == False):
+            # TODO - How do we pass this error back to the calling SimPhoNY code?
+            # TODO - Should there be a CUDS objects to hold error messages?
             print("Job was not submitted successfully, returning None")
             return None
 
-        # Wait a little time
+        # Wait a little time for the request to process
         time.sleep(self.POLL_INTERVAL)
 
         # Request outputs
@@ -174,8 +176,8 @@ class AgentBridge:
 
     def __getJobResults(self, url: str, attempt: int):
         """Make a HTTP request to get the final results of the submitted job.
-        Recurses until the request reports that the job is finished (or a maximum
-        number of attempts is reached)
+        Recurses until the request reports that the job is finished (or a 
+        maximum number of attempts is reached)
 
         Arguments:
             url (str)     -- Output request URL

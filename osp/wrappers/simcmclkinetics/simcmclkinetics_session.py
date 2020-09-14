@@ -11,9 +11,9 @@ from osp.wrappers.simcmclkinetics import SimulationEngine
 
 
 class SimCMCLkineticsSession(SimWrapperSession):
-    """Entry class for the kinetics simulation system. A single class instance
-    handles setting up, running, and returning outputs from a single kinetics
-    simulation.
+    """Entry class for the kinetics simulation system. A single class
+    instance handles setting up, running, and returning outputs
+    from a single SimulationEngine.
 
     This should be the only class exposed to calling code.
     """
@@ -21,6 +21,9 @@ class SimCMCLkineticsSession(SimWrapperSession):
 
     def __init__(self, **kwargs):
         """Initialises the session and creates a new SimulationEngine instance.
+
+        Arguments:
+            kwargs -- Keyword arguments
         """
         super().__init__(SimulationEngine(), **kwargs)
 
@@ -33,14 +36,25 @@ class SimCMCLkineticsSession(SimWrapperSession):
         """
         return "CMCL Kinetics wrapper session"
 
+
     def forceRun(self, root_cuds_object):
         """Public testing method to foricbly run this instance.
+        
+        Arguments:
+            root_cuds_object -- Root CUDS object representing input data
         """
+        # TODO - Once we're able to call the private _run() function
+        # via the OSP wrapper/session interface, then this function
+        # should be removed.
         self._run(root_cuds_object)
+
 
     def _run(self, root_cuds_object):
         """Run the engine to execute a kinetics simulation.
 
+        Note that once CUDS data is passed into this method, it should be
+        considered READ-ONLY by any calling code outside this wrapper.
+        
         Arguments:
             root_cuds_object -- Root CUDS object representing input data
         """
