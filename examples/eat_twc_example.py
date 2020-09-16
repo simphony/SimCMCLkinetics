@@ -78,13 +78,6 @@ eat_process.add(outputs, rel=CMCL.HAS_PART)
 
 # Construct a wrapper and run a new session
 with SimCMCLkineticsSession() as session:
-    # TODO - Using the wrapper class here should be the proper solution,
-    # but it appears to cause an error in OSP core that I'm not 100%
-    # sure is due to something in the CMCL code.
-
-    #wrapper = CMCL.wrapper(session=session)
-    #cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
-    #wrapper.session.run()
-
-    # Forcibly start the session
-    session.forceRun(eat_process)
+    wrapper = CMCL.wrapper(session=session)
+    cb_synthesis_w = wrapper.add(eat_process, rel=CMCL.HAS_PART)
+    wrapper.session.run()

@@ -74,14 +74,7 @@ cb_synthesis.add(outputs, rel=CMCL.HAS_PART)
 #pretty_print(cb_synthesis)
 
 # Construct a wrapper and run a new session
-with SimCMCLkineticsSession() as session:
-    # TODO - Using the wrapper class here should be the proper solution,
-    # but it appears to cause an error in OSP core that I'm not 100%
-    # sure is due to something in the CMCL code.
-
-    #wrapper = CMCL.wrapper(session=session)
-    #cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
-    #wrapper.session.run()
-
-    # Forcibly start the session
-    session.forceRun(cb_synthesis)
+with SimCMCLkineticsSession() as s:
+    w = CMCL.wrapper(session = s)
+    w.add(cb_synthesis, rel=CMCL.HAS_PART)
+    w.session.run()

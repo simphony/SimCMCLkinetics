@@ -37,18 +37,6 @@ class SimCMCLkineticsSession(SimWrapperSession):
         return "CMCL Kinetics wrapper session"
 
 
-    def forceRun(self, root_cuds_object):
-        """Public testing method to foricbly run this instance.
-        
-        Arguments:
-            root_cuds_object -- Root CUDS object representing input data
-        """
-        # TODO - Once we're able to call the private _run() function
-        # via the OSP wrapper/session interface, then this function
-        # should be removed.
-        self._run(root_cuds_object)
-
-
     def _run(self, root_cuds_object):
         """Run the engine to execute a kinetics simulation.
 
@@ -99,4 +87,8 @@ class SimCMCLkineticsSession(SimWrapperSession):
         :param expired: Which of the cuds_objects are expired.
         :type expired: Set[UUID]
         """
-        pass
+        for uid in uids:
+            if uid in self._registry:
+                yield self._registry.get(uid)
+            else:
+                yield None
