@@ -1,31 +1,31 @@
 # pylint: disable=no-name-in-module
-
-# Import CUDS objects generated from CMCL ontology
+import json
 from osp.core import CMCL
-
-# Import generic wrapper class from OSP core
 from osp.core.session import SimWrapperSession
+from osp.wrappers.simcmclkinetics import KineticsEngine
+from osp.wrappers.simcmclkinetics import AgentBridge
+from osp.wrappers.simcmclkinetics import CUDSAdaptor
 
-# Import CMCL SimulationEngine class
-from osp.wrappers.simcmclkinetics import SimulationEngine
 
-
-class SimCMCLkineticsSession(SimWrapperSession):
-    """Entry class for the kinetics simulation system. A single class
-    instance handles setting up, running, and returning outputs
-    from a single SimulationEngine.
-
-    This should be the only class exposed to calling code.
+class KineticsSession(SimWrapperSession):
+    """This session class wraps a KineticsEngine instance, calls it, then passes the 
+    JSON data it has produced to an AgentBridge instance that runs the remote
+    simulation with the Kinetics and SRM Engine Suite.
     """
     
 
-    def __init__(self, **kwargs):
+    def __init__(self, engine: KineticsEngine, **kwargs):
         """Initialises the session and creates a new SimulationEngine instance.
 
         Arguments:
+            engine -- KineticsEngine instance
             kwargs -- Keyword arguments
         """
-        super().__init__(SimulationEngine(), **kwargs)
+
+        # TODO - Do we expect an already instantiated KineticsEngine here,
+        # or should we be creating it (if so, how to detect with concrete
+        # engine class to use)? 
+        super().__init__(engine, **kwargs)
 
 
     def __str__(self):
@@ -34,11 +34,11 @@ class SimCMCLkineticsSession(SimWrapperSession):
         Returns:
             Textual representation
         """
-        return "CMCL Kinetics wrapper session"
+        return "Kinetics Wrapper Session"
 
 
     def _run(self, root_cuds_object):
-        """Run the engine to execute a kinetics simulation.
+        """Runs the AgentBridge class to execute a remote Kinetics simulation.
 
         Note that once CUDS data is passed into this method, it should be
         considered READ-ONLY by any calling code outside this wrapper.
@@ -46,7 +46,18 @@ class SimCMCLkineticsSession(SimWrapperSession):
         Arguments:
             root_cuds_object -- Root CUDS object representing input data
         """
-        self._engine.run(root_cuds_object)
+
+        # Use the engine to generate JSON inputs
+        jsonInputs = self._engine.generateJSON(root_cuds_object)
+
+        # Run remote simulation (via AgentBridge)
+        agentBridge = AgentBridge()
+        jsonResult = agentBridge.runJob(json.dumps(jsonInputs))
+
+        # Pass results (in JSON form) back to the engine for parsing
+        self._engine.parseResutls(jsonResult, root_cuds_object)
+
+        print("Session has concluded.")
 
     
     def _apply_added(self, root_obj, buffer):

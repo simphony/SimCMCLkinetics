@@ -1,16 +1,11 @@
-#
+# pylint: disable=no-name-in-module
+from osp.core import CMCL
+from osp.wrappers.simcmclkinetics import KineticsSession
+from osp.wrappers.simcmclkinetics import CarbonBlackEngine
+
 # This examples aims to run the CarbonBlack_StochasticSolver use case by hard-coding
 # the input CUDS objects and passing them to the SimCMCLkineticsSession class
 # for execution.
-#
-
-# Import CUDS objects generated from CMCL ontology
-# pylint: disable=no-name-in-module
-from osp.core import CMCL
-
-# Import the session wrapper
-from osp.wrappers.simcmclkinetics import SimCMCLkineticsSession
-
 # Replicate the inputs.json of the use case; note that these values
 # were taken from the following kinetics-backend commit:
 # 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
@@ -62,18 +57,11 @@ cb_synthesis.add(
 # Add container for future outputs
 cb_synthesis.add(outputs, rel=CMCL.HAS_PART)
 
-# Pretty print CUDS data for testing
-#pretty_print(cb_synthesis)
+# Construct an applicable engine instance
+engine = CarbonBlackEngine()
 
 # Construct a wrapper and run a new session
-with SimCMCLkineticsSession() as session:
-    # TODO - Using the wrapper class here should be the proper solution,
-    # but it appears to cause an error in OSP core that I'm not 100%
-    # sure is due to something in the CMCL code.
-
-    #wrapper = CMCL.wrapper(session=session)
-    #cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
-    #wrapper.session.run()
-
-    # Forcibly start the session
-    session.forceRun(cb_synthesis)
+with KineticsSession(engine) as session:
+    wrapper = CMCL.wrapper(session=session)
+    cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
+    wrapper.session.run()
