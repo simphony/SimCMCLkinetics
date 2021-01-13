@@ -1,7 +1,9 @@
+import logging
+
 # pylint: disable=no-name-in-module
-from osp.core import CMCL
-from osp.wrappers.simcmclkinetics import KineticsSession
-from osp.wrappers.simcmclkinetics import CarbonBlackEngine
+from osp.core.namespaces import CMCL
+from osp.wrappers.simcmclkinetics.kinetics_session import KineticsSession
+from osp.wrappers.simcmclkinetics.carbon_black_engine import CarbonBlackEngine
 
 
 # This examples aims to run the CarbonBlack_MoMICSolver use case by hard-coding
@@ -12,13 +14,17 @@ from osp.wrappers.simcmclkinetics import CarbonBlackEngine
 # were taken from the following kinetics-backend commit:
 # 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
 
+# Set the level of the logger in OSP Core
+logging.getLogger('osp.core').setLevel(logging.ERROR)
+
 # Grab the main entities
 cb_synthesis = CMCL.CB_SYNTHESIS_PROCESS()
 inlet_mixture = CMCL.INLET_GAS(unit="mole fraction")
 cb_reactor = CMCL.CB_SYNTHESIS_REACTOR()
 heterog_mixture = CMCL.PHASE_HETEROGENEOUS_REACTIVE_MIXTURE()
 cb_powder = CMCL.CARBON_BLACK_POWDER()
-outputs = CMCL.OUTPUT_CONTAINER()
+requested_outputs = CMCL.OUTPUT_REQUESTS()
+results = CMCL.OUTPUT_RESULTS()
 
 # Set the physical propeties of the reactor
 cb_reactor.add(
@@ -48,7 +54,7 @@ cb_powder.add(
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
 
 # Add the names of output quantities we want to get back
-outputs.add(
+requested_outputs.add(
     CMCL.OUT_MEAN_PART_DIAMETER(),
     CMCL.OUT_PART_NUMBER(),
     CMCL.OUT_PART_VOLFRAC(),
@@ -64,9 +70,11 @@ cb_synthesis.add(
     cb_powder,
     rel=CMCL.HAS_PROPER_PARTICIPANT)
 
-# Add container for future outputs
-cb_synthesis.add(outputs, rel=CMCL.HAS_PART)
+# Add request for outputs
+cb_synthesis.add(requested_outputs, rel=CMCL.HAS_PART)
 
+# Add container for future results
+cb_synthesis.add(results, rel=CMCL.HAS_PART)
 
 # Construct an applicable engine instance
 engine = CarbonBlackEngine()

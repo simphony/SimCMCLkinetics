@@ -9,13 +9,13 @@ class AgentBridge:
     """
 
     # Polling interval when waiting or jobs to finish (seconds)
-    POLL_INTERVAL = 30
+    POLL_INTERVAL = 10
 
     # Maximum number of requests when waiting for jobs to finish
     MAX_ATTEMPTS = 60
 
     # Base URL for HTTP requests
-    BASE_URL = "http://localhost:8088/KineticsAgent/job/"
+    BASE_URL = "http://kg.cmclinnovations.com:8082/KineticsAgent/job/"
 
     # Additional URL part for job submission
     SUBMISSION_URL_PART = "request?query="
@@ -219,5 +219,4 @@ class AgentBridge:
                 return self.__getJobResults(url, attempt + 1)
             
         else:
-            print("Job has finished.")
             return returnedJSON

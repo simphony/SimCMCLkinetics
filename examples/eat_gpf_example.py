@@ -1,7 +1,10 @@
+import logging
+
 # pylint: disable=no-name-in-module
 from osp.core import CMCL
 from osp.wrappers.simcmclkinetics import KineticsSession
 from osp.wrappers.simcmclkinetics import EATEngine
+
 
 # This examples aims to run the EAT_GPF use case by hard-coding
 # the input CUDS objects and passing them to the KineticsSession class
@@ -10,6 +13,9 @@ from osp.wrappers.simcmclkinetics import EATEngine
 # Replicated the inputs.json of the use case; note that these values
 # were taken from the following kinetics-backend commit:
 # 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
+
+# Set the level of the logger in OSP Core
+logging.getLogger('osp.core').setLevel(logging.ERROR)
 
 # Initialise and set values for the GPF
 gpf = CMCL.GPF()
@@ -55,8 +61,8 @@ untreated_exhaust.add(
 )
 
 # Add the names of output quantities we want to get back
-outputs = CMCL.OUTPUT_CONTAINER()
-outputs.add(
+requested_outputs = CMCL.OUTPUT_REQUESTS()
+requested_outputs.add(
     CMCL.OUT_PM_IN(),
     CMCL.OUT_PM_OUT(),
     CMCL.OUT_PN_IN(),
@@ -71,8 +77,12 @@ eat_process.add(
     rel=CMCL.HAS_PROPER_PARTICIPANT
 )
 
+# Add request for outputs
+eat_process.add(requested_outputs, rel=CMCL.HAS_PART)
+
 # Add container for future outputs
-eat_process.add(outputs, rel=CMCL.HAS_PART)
+results = CMCL.OUTPUT_RESULTS()
+eat_process.add(results, rel=CMCL.HAS_PART)
 
 # Construct an applicable engine instance
 engine = EATEngine()

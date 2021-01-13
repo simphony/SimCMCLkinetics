@@ -2,7 +2,7 @@ import json
 import osp.core.utils.simple_search as search
 
 # pylint: disable=no-name-in-module
-from osp.core import CMCL
+from osp.core.namespaces import CMCL
 from osp.wrappers.simcmclkinetics import AgentBridge
 from osp.wrappers.simcmclkinetics import CUDSAdaptor
 from osp.wrappers.simcmclkinetics import KineticsEngine

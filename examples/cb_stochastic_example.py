@@ -1,7 +1,10 @@
+import logging
+
 # pylint: disable=no-name-in-module
-from osp.core import CMCL
+from osp.core.namespaces import CMCL
 from osp.wrappers.simcmclkinetics import KineticsSession
 from osp.wrappers.simcmclkinetics import CarbonBlackEngine
+
 
 # This examples aims to run the CarbonBlack_StochasticSolver use case by hard-coding
 # the input CUDS objects and passing them to the SimCMCLkineticsSession class
@@ -10,12 +13,16 @@ from osp.wrappers.simcmclkinetics import CarbonBlackEngine
 # were taken from the following kinetics-backend commit:
 # 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
 
+# Set the level of the logger in OSP Core
+logging.getLogger('osp.core').setLevel(logging.ERROR)
+
 # Grab the main entities
 cb_synthesis = CMCL.CB_SYNTHESIS_PROCESS()
 inlet_mixture = CMCL.INLET_GAS(unit="mole fraction")
 cb_reactor = CMCL.CB_SYNTHESIS_REACTOR()
 heterog_mixture = CMCL.PHASE_HETEROGENEOUS_REACTIVE_MIXTURE()
-outputs = CMCL.OUTPUT_CONTAINER()
+requested_outputs = CMCL.OUTPUT_REQUESTS()
+results = CMCL.OUTPUT_RESULTS()
 
 # Set the physical propeties of the reactor
 cb_reactor.add(
@@ -37,7 +44,7 @@ heterog_mixture.add(
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
 
 # Add the names of output quantities we want to get back
-outputs.add(
+requested_outputs.add(
     CMCL.OUT_PART_SIZE_DISTR_Y(),
     CMCL.OUT_PART_SIZE_DISTR_X(),
     CMCL.OUT_PRIM_SIZE_DISTR_Y(),
@@ -54,8 +61,12 @@ cb_synthesis.add(
     cb_reactor, 
     rel=CMCL.HAS_PROPER_PARTICIPANT)
 
+# Add request for outputs
+cb_synthesis.add(requested_outputs, rel=CMCL.HAS_PART)
+
 # Add container for future outputs
-cb_synthesis.add(outputs, rel=CMCL.HAS_PART)
+results = CMCL.OUTPUT_RESULTS()
+cb_synthesis.add(results, rel=CMCL.HAS_PART)
 
 # Construct an applicable engine instance
 engine = CarbonBlackEngine()

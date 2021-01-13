@@ -1,14 +1,14 @@
 import json
+from abc import ABC, abstractmethod
+
+from osp.core.utils import pretty_print
 import osp.core.utils.simple_search as search
 
 # pylint: disable=no-name-in-module
-from osp.core import CMCL
+from osp.core.namespaces import CMCL
 from osp.wrappers.simcmclkinetics import AgentBridge
 from osp.wrappers.simcmclkinetics import CUDSAdaptor
 
-from osp.core.utils import pretty_print
-
-from abc import ABC, abstractmethod
 
 class KineticsEngine(ABC):
     """Abstract parent engine class. Manages the CUDS objects that contain the
@@ -86,6 +86,20 @@ class KineticsEngine(ABC):
             CUDSAdaptor.toCUDS(jsonResults, root_cuds_object)
             print("CUDS objects have now been populated with simulation results.")
             self.successful = True
+
+        results = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_RESULTS, root_cuds_object, rel=None)
+
+        if results is not None:
+            if len(results) == 0:
+                print("Could not find OUTPUT_RESULTS instance in CUDS")
+            else:         
+                outputs_file = open("output_results.txt", "w")  
+                pretty_print(results[0], outputs_file)                
+                outputs_file.close()
+                print("CUDS representation of results written to: ./output_results.txt")
+
+        else:
+            print("Could not find OUTPUT_RESULTS instance in CUDS")
 
         # Mark as complete
         self.executed = True

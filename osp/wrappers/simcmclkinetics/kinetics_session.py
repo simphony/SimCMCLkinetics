@@ -1,7 +1,10 @@
-# pylint: disable=no-name-in-module
+
 import json
-from osp.core import CMCL
 from osp.core.session import SimWrapperSession
+from osp.core.utils import pretty_print
+
+# pylint: disable=no-name-in-module
+from osp.core.namespaces import CMCL
 from osp.wrappers.simcmclkinetics import KineticsEngine
 from osp.wrappers.simcmclkinetics import AgentBridge
 from osp.wrappers.simcmclkinetics import CUDSAdaptor
@@ -46,6 +49,14 @@ class KineticsSession(SimWrapperSession):
         Arguments:
             root_cuds_object -- Root CUDS object representing input data
         """
+        print("")
+        print("===== Start: KineticsSession =====")
+
+        # Save a copy of the CUDS inputs
+        inputs_file = open("input_results.txt", "w")
+        pretty_print(root_cuds_object, inputs_file)
+        inputs_file.close()
+        print("CUDS representation of inputs written to: ./input_results.txt")
 
         # Use the engine to generate JSON inputs
         jsonInputs = self._engine.generateJSON(root_cuds_object)
@@ -55,10 +66,10 @@ class KineticsSession(SimWrapperSession):
         jsonResult = agentBridge.runJob(json.dumps(jsonInputs))
 
         # Pass results (in JSON form) back to the engine for parsing
-        self._engine.parseResutls(jsonResult, root_cuds_object)
-
-        print("Session has concluded.")
-
+        self._engine.parseResults(jsonResult, root_cuds_object)
+        
+        print("===== End: KineticsSession =====")
+        print("")
     
     def _apply_added(self, root_obj, buffer):
         """Not used in the this concrete wrapper.
