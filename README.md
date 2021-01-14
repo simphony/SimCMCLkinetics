@@ -1,4 +1,5 @@
 <img align="right" src="cmcl_logo.png" alt="CMCL Logo">
+
 # SimCMCLKinetics
 SimPhoNy wrapper for the CMCL's "*k*inetics & SRM Engine Suite" software.
 
