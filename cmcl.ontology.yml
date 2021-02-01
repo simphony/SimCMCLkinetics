@@ -46,29 +46,30 @@ ontology:
     subclass_of:
       - CUBA.PASSIVE_RELATIONSHIP
 
-  HAS_OUTPUT_REQUEST:
+  HAS_OUTPUT:
     description: "default relationship"
-    inverse: CMCL.IS_OUTPUT_REQUEST
+    inverse: CMCL.IS_OUTPUT
     subclass_of:
       - CUBA.ACTIVE_RELATIONSHIP
 
-  IS_OUTPUT_REQUEST:
+  IS_OUTPUT:
     description: "inverse of the default relationship"
-    inverse: CMCL.HAS_OUTPUT_REQUEST
+    inverse: CMCL.HAS_OUTPUT
     subclass_of:
       - CUBA.PASSIVE_RELATIONSHIP
-
-  HAS_OUTPUT_RESULT:
+      
+  HAS_OUTPUT_VALUE:
     description: "default relationship"
-    inverse: CMCL.IS_OUTPUT_RESULT
+    inverse: CMCL.IS_OUTPUT_VALUE
     subclass_of:
       - CUBA.ACTIVE_RELATIONSHIP
 
-  IS_OUTPUT_RESULT:
+  IS_OUTPUT_VALUE:
     description: "inverse of the default relationship"
-    inverse: CMCL.HAS_OUTPUT_RESULT
+    inverse: CMCL.HAS_OUTPUT_VALUE
     subclass_of:
       - CUBA.PASSIVE_RELATIONSHIP
+
 
 ################ MAIN CB ENTITIES ################
 #================================================#
@@ -164,60 +165,55 @@ ontology:
         range: CMCL.PARTICLE_VOLUME_FRACTION
         cardinality: 1
 
-  OUTPUT_REQUESTS:
+  OUTPUTS:
     subclass_of:
     - CUBA.ENTITY
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_MEAN_PART_DIAMETER
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PART_NUMBER
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PART_VOLFRAC
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PART_SIZE_DISTR_Y
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PART_SIZE_DISTR_X
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PRIM_SIZE_DISTR_Y
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PRIM_SIZE_DISTR_X
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PART_AVG_FRACT_DIM
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PM_IN
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PM_OUT
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PN_IN
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_PN_OUT
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_NO_OUT
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_CO_OUT
         cardinality: 1
-    - CMCL.HAS_OUTPUT_REQUEST:
+    - CMCL.HAS_OUTPUT:
         range: CMCL.OUT_C3H6_OUT
         cardinality: 1
 
-  OUTPUT_RESULTS:
-    subclass_of:
-    - CUBA.ENTITY
-    - CMCL.HAS_OUTPUT_RESULT:
-        range: CMCL.OUTPUT_RESULT
 
 ################ MAIN EAT ENTITIES ###############
 #================================================#
@@ -472,63 +468,63 @@ ontology:
 # SIMULATION OUTPUT QUANTITIES
   OUT_MEAN_PART_DIAMETER:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PART_NUMBER:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PART_VOLFRAC:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PART_SIZE_DISTR_Y:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PART_SIZE_DISTR_X:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PRIM_SIZE_DISTR_Y:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
   
   OUT_PRIM_SIZE_DISTR_X:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PART_AVG_FRACT_DIM:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PM_IN:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PM_OUT:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
   
   OUT_PN_IN:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_PN_OUT:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_NO_OUT:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
   
   OUT_CO_OUT:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
   OUT_C3H6_OUT:
     subclass_of:
-    - CMCL.OUTPUT_REQUEST
+    - CMCL.OUTPUT_QUANTITY
 
 ##### PHYSICAL_QUANTITY
   PHYSICAL_QUANTITY:
@@ -538,29 +534,24 @@ ontology:
       CMCL.VALUE:
       CMCL.UNIT:
 
-  ##### OUTPUT_REQUEST
-  OUTPUT_REQUEST:
+##### OUTPUT
+  OUTPUT_QUANTITY:
     subclass_of:
     - CUBA.ENTITY
-
-  ##### OUTPUT_RESULT
-  OUTPUT_RESULT:
+    - CMCL.HAS_OUTPUT_VALUE:
+        range: CMCL.OUTPUT_VALUE
+   
+  OUTPUT_VALUE:
     subclass_of:
     - CUBA.ENTITY
     attributes:
-      CMCL.NAME:
       CMCL.VALUE:
       CMCL.UNIT:
-
-  NAME:
-    subclass_of:
-    - CUBA.ATTRIBUTE
-    datatype: STRING
 
   VALUE:
     subclass_of:
     - CUBA.ATTRIBUTE
-
+    
   UNIT:
     subclass_of:
     - CUBA.ATTRIBUTE

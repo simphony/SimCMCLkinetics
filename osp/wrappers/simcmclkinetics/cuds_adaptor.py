@@ -4,7 +4,6 @@ from osp.core.namespaces import CMCL
 
 # Import CUDS searching from OSP Core
 import osp.core.utils.simple_search as search
-
 import requests
 import json
 import urllib.parse
@@ -56,7 +55,7 @@ class CUDSAdaptor:
 
         # Find and register all output quantities (outputs)
         outputsList = []
-        outputs = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_REQUEST, root_cuds_object, rel=None)
+        outputs = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_QUANTITY, root_cuds_object, rel=None)
         
         for output in outputs:
             CUDSAdaptor.registerOutput(outputsList, output)
@@ -141,21 +140,44 @@ class CUDSAdaptor:
         # match (i.e. a CUDS object with an oclass name matching the JSON string
         # is searched for); mismatches will cause errors.
 
-        results = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_RESULTS, root_cuds_object, rel=None)
-        results = results[0]
-
         # For each output in the returned JSON
         for output_key in jsonData:
             name = output_key[1:]
             unit = jsonData[output_key]["unit"]
-            value = jsonData[output_key]["value"]
 
-            # Create a new RESULT to store results
-            cuds_output = CMCL.OUTPUT_RESULT(
-                name=name,
-                unit=unit,
-                value=str(value).strip("[]")
-            )
+            wholeValue = jsonData[output_key]["value"]
+            wholeValue = str(wholeValue).replace("[]","")
+            values = wholeValue.split(",")
 
-            # Register RESULT within RESULTS container
-            results.add(cuds_output, rel=CMCL.HAS_OUTPUT_RESULT)
+            # Find the corresponding CUDS output (by oclass name)
+            cuds_output = CUDSAdaptor.nameMatch(root_cuds_object, name)
+            
+            # Store returned unit and value
+            if cuds_output is not None:
+                print("Settings values for %s" % (name))
+
+                for value in values:
+                    cuds_output.add(
+                        CMCL.OUTPUT_VALUE(value = value, unit = unit),
+                        rel=CMCL.HAS_OUTPUT_VALUE
+                    )    
+            else:
+                print("ERROR: Could not find output quantity %s" % (name))
+
+
+    @staticmethod
+    def nameMatch(root_cuds_object, name):
+        """Searches for the first object in the inputs CUDS data
+        that has a matching oclass name.
+
+        Arguments:
+            root_cuds_objects -- CUDS search space
+            name              -- target oclass name
+        """
+        outputs = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_QUANTITY, root_cuds_object, rel=None)
+       
+        for sub in outputs:
+            if sub.oclass.name == name:
+                return sub
+    
+        return None

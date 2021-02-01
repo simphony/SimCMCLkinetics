@@ -57,8 +57,8 @@ untreated_exhaust.add(
 )
 
 # Add the names of output quantities we want to get back
-requested_outputs = CMCL.OUTPUT_REQUESTS()
-requested_outputs.add(
+outputs = CMCL.OUTPUTS()
+outputs.add(
     CMCL.OUT_NO_OUT(),
     CMCL.OUT_CO_OUT(),
     CMCL.OUT_C3H6_OUT(),
@@ -72,12 +72,8 @@ eat_process.add(
     rel=CMCL.HAS_PROPER_PARTICIPANT
 )
 
-# Add request for outputs
-eat_process.add(requested_outputs, rel=CMCL.HAS_PART)
-
-# Add container for future outputs
-results = CMCL.OUTPUT_RESULTS()
-eat_process.add(results, rel=CMCL.HAS_PART)
+# Add outputs
+eat_process.add(outputs, rel=CMCL.HAS_PART)
 
 # Construct an applicable engine instance
 engine = EATEngine()

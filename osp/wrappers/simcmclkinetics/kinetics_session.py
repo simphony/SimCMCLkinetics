@@ -1,4 +1,4 @@
-
+import sys
 import json
 from osp.core.session import SimWrapperSession
 from osp.core.utils import pretty_print
@@ -29,7 +29,7 @@ class KineticsSession(SimWrapperSession):
         # or should we be creating it (if so, how to detect with concrete
         # engine class to use)? 
         super().__init__(engine, **kwargs)
-
+    
 
     def __str__(self):
         """Returns a textual representation.

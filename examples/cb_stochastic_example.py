@@ -21,8 +21,7 @@ cb_synthesis = CMCL.CB_SYNTHESIS_PROCESS()
 inlet_mixture = CMCL.INLET_GAS(unit="mole fraction")
 cb_reactor = CMCL.CB_SYNTHESIS_REACTOR()
 heterog_mixture = CMCL.PHASE_HETEROGENEOUS_REACTIVE_MIXTURE()
-requested_outputs = CMCL.OUTPUT_REQUESTS()
-results = CMCL.OUTPUT_RESULTS()
+outputs = CMCL.OUTPUTS()
 
 # Set the physical propeties of the reactor
 cb_reactor.add(
@@ -61,12 +60,8 @@ cb_synthesis.add(
     cb_reactor, 
     rel=CMCL.HAS_PROPER_PARTICIPANT)
 
-# Add request for outputs
-cb_synthesis.add(requested_outputs, rel=CMCL.HAS_PART)
-
-# Add container for future outputs
-results = CMCL.OUTPUT_RESULTS()
-cb_synthesis.add(results, rel=CMCL.HAS_PART)
+# Add outputs
+cb_synthesis.add(outputs, rel=CMCL.HAS_PART)
 
 # Construct an applicable engine instance
 engine = CarbonBlackEngine()

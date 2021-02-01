@@ -23,8 +23,7 @@ inlet_mixture = CMCL.INLET_GAS(unit="mole fraction")
 cb_reactor = CMCL.CB_SYNTHESIS_REACTOR()
 heterog_mixture = CMCL.PHASE_HETEROGENEOUS_REACTIVE_MIXTURE()
 cb_powder = CMCL.CARBON_BLACK_POWDER()
-requested_outputs = CMCL.OUTPUT_REQUESTS()
-results = CMCL.OUTPUT_RESULTS()
+requested_outputs = CMCL.OUTPUTS()
 
 # Set the physical propeties of the reactor
 cb_reactor.add(
@@ -70,11 +69,11 @@ cb_synthesis.add(
     cb_powder,
     rel=CMCL.HAS_PROPER_PARTICIPANT)
 
-# Add request for outputs
-cb_synthesis.add(requested_outputs, rel=CMCL.HAS_PART)
-
-# Add container for future results
-cb_synthesis.add(results, rel=CMCL.HAS_PART)
+# Add empty outputs directly to the wrapper
+cb_synthesis.add(
+    requested_outputs,
+    rel=CMCL.HAS_PART
+)
 
 # Construct an applicable engine instance
 engine = CarbonBlackEngine()
@@ -82,5 +81,9 @@ engine = CarbonBlackEngine()
 # Construct a wrapper and run a new session
 with KineticsSession(engine) as session:
     wrapper = CMCL.wrapper(session=session)
-    cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
+
+    # Add CB Synthesis process to the wrapper
+    wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
+
+    # Run the wrapper
     wrapper.session.run()

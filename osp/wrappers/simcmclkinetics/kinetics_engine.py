@@ -87,7 +87,7 @@ class KineticsEngine(ABC):
             print("CUDS objects have now been populated with simulation results.")
             self.successful = True
 
-        results = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_RESULTS, root_cuds_object, rel=None)
+        results = search.find_cuds_objects_by_oclass(CMCL.OUTPUTS, root_cuds_object, rel=None)
 
         if results is not None:
             if len(results) == 0:
