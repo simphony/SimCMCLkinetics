@@ -64,20 +64,10 @@ class KineticsSession(SimWrapperSession):
         # Use the engine to generate JSON inputs
         jsonInputs, synEntityToCUDSmap = self._engine.generateJSON(root_cuds_object, simulation_template)
 
-        #with open('inputs.json', 'w') as f:
-        #    json.dump(jsonInputs, f)
-
         # Run remote simulation (via AgentBridge)
         agentBridge = AgentBridge()
         jsonResult = agentBridge.runJob(json.dumps(jsonInputs))
 
-        #with open('twc_json_out.txt') as json_file:
-        #    jsonResult = json.load(json_file)
-
-        # cached momic results
-        #jsonResult = json.loads(('{"$OUT_PART_VOLFRAC":{"unit":"-","value":[6.80018E-6]}, \
-        #                "$OUT_MEAN_PART_DIAMETER":{"unit":"nm","value":[468.019]}, \
-        #                "$OUT_PART_NUMBER":{"unit":"#","value":[6.81728E8]}}'))
         # Pass results (in JSON form) back to the engine for parsing
         self._engine.parseResults(jsonResult, root_cuds_object, synEntityToCUDSmap)
 
