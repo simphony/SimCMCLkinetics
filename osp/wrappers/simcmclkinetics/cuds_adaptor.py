@@ -8,176 +8,318 @@ import requests
 import json
 import urllib.parse
 import time
+import osp.wrappers.simcmclkinetics.agent_cases as ac
 
+TRANS_FUNC_KEY = 'transFunc'
+TRANS_FUNC_ARGS_KEY = 'transArgs'
+TRANS_FUNC_INP_DEPS_KEY = 'transInpDeps'
+TRANS_FUNC_OUT_DEPS_KEY = 'transOutDeps'
+CUDS_BIND = 'cudsEntity'
 
 class CUDSAdaptor:
     """Class to handle translation between CUDS and JSON objects.
     """
 
     @staticmethod
-    def toJSON(simulation_template, root_cuds_object):
-        """Translates the input CUDS object to a JSON object matching the 
+    def toJSON(root_cuds_object, simulation_template):
+        """Translates the input CUDS object to a JSON object matching the
         INPUT format of remote kinetics simulations.
 
         Arguments:
             root_cuds_object    -- Root of CUDS object representing inputs
-            simulation_template -- Name (index?) of simulation template
+            simulation_template -- Object that provides a mapping between
+                                   semantic ontological description and its
+                                   syntactic descirption that engine understands
 
         Returns:
-            JSON data generated from CUDS
+            jsonData            -- JSON data generated from CUDS
+            synEntityToCUDSmap  -- Dictionary which stores a mapping between concrete
+                                   cuds object instances and their syntactic representation
+                                   (keys) that engine understands. This is used to map back
+                                   engine outputs to cuds.
         """
         # NOTE - This translation relies heavily on the structure of the CUDS data,
         # which is defined by the ontology. If the ontology changes, it is likely
-        # that this translation will need updating too.
-
-        # NOTE - This translation works by writing all OUTPUT_QUANTITY instances,
-        # and any PHYSICAL_QUANTITY instance that has a value to JSON. As this 
-        # wrapper code has no knowledge of what inputs are supported within the
-        # JSON request, it may result in outputting additional JSON parameters if
-        # they're present in the CUDS data. Without prior knowledge of the expected 
-        # JSON inputs (or some "mark-for-input" flag within the ontology), then
-        # I can see no way to prevent this.
-    
-        # NOTE - When parameters are translated from CUDS to JSON, their CUDS oclass 
-        # name is used for the JSON string. This means that if the names in the 
-        # ontology do not match the names expected in the JSON, there will be errors.
-        # Short of writing a massive, hard-coded CUDS-to-JSON name mapper, I can see
-        # no other solution here.
+        # that this translation will need updating too. The translation is defined
+        # in the agent_cases module.
 
         jsonData = {}
+        synEntityToCUDSmap = {}
 
-        # Find and register all physical quantities (inputs)
-        inputsDict = {}
-        physicals = search.find_cuds_objects_by_oclass(CMCL.PHYSICAL_QUANTITY, root_cuds_object, rel=None)
-        
-        for physical in physicals:
-            CUDSAdaptor.registerInput(inputsDict, physical)
+        jsonData["Case"]    = simulation_template.template
+        jsonData["Inputs"]  = {}
+        jsonData["Outputs"] = []
 
-        # Find and register all output quantities (outputs)
-        outputsList = []
-        outputs = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_QUANTITY, root_cuds_object, rel=None)
-        
-        for output in outputs:
-            CUDSAdaptor.registerOutput(outputsList, output)
+        # Find and register all input quantities (input)
+        for inpSemSynMap in simulation_template.inputs:
+            CUDSAdaptor.registerInput(root_cuds_object, jsonData["Inputs"], inpSemSynMap)
 
-        jsonData["Case"]    = simulation_template
-        jsonData["Inputs"]  = inputsDict
-        jsonData["Outputs"] = outputsList
-        
-        return jsonData
+        # Find and register all output quantities (outputs) and construct synEntityToCUDSmap dictionary
+        for outSemSynMap in simulation_template.outputs:
+            CUDSAdaptor.registerOutput(root_cuds_object, jsonData["Outputs"], jsonData["Inputs"], outSemSynMap, synEntityToCUDSmap)
 
+        return jsonData, synEntityToCUDSmap
 
     @staticmethod
-    def registerInput(dict, quantity):
-        """Registered the passed quantity as an input within the input JSON dict.
+    def registerInput(root_cuds_object, json_inp_dict, inpSemSynMap):
+        """Registers the passed quantity as an input within the input JSON dict.
 
         Arguments:
-            dict     -- JSON dictionary
-            quantity -- physical quantity
+            root_cuds_object    -- Root of CUDS object representing inputs
+            json_inp_dict       -- JSON dictionary that would store a given input syntactic representation
+            inpSemSynMap        -- object providing semantic-syntactic mapping for a given input
         """
-        value = quantity.value
-        unit = quantity.unit
+
+        # Use the semEntity type associated with a given input from inpSemSynMap object to find the concrete cuds instance
+        # that represents this input
+        if inpSemSynMap.transFunc is not None:
+            inputValue, inputUnit = CUDSAdaptor.getTransformedInput(root_cuds_object, inpSemSynMap, json_inp_dict)
+        else:
+            inputCUDS = search.find_cuds_objects_by_oclass(inpSemSynMap.semEntity, root_cuds_object, rel=None)
+            if not inputCUDS:
+                return
+
+            inputCUDS = inputCUDS[0]
+
+            # Store input cuds value and unit. the engine only accepts the string values, hence the conversion
+            inputUnit = inputCUDS.unit
+
+            # NOTE in order to support two possible values in ontological entities (float and string) there
+            # are two "VALUE" cuds entities introduced: "VALUE" and "VALUE_STRING". These are further attached
+            # to appropriate cuds entities as attribtues. In order to check if a given cuds has either former
+            # or latter attribtue all its attributes names are put into a list below and are inspected.
+            # NOTE this code will likely change in the future once a proper vector datatype support is added
+            # to the simphony core
+            inputCUDSattributeNames = [str(attr_name).lower() for attr_name in inputCUDS.get_attributes().keys()]
+            if any('value_string' in attr_name for attr_name in inputCUDSattributeNames):
+                # this cuds value is stored via "value_string" attribute
+                inputValue = str(inputCUDS.value_string)
+            else:
+                inputValue = str(inputCUDS.value)
 
         # Not a valid input parameter, do not register
-        if (value == None) or (type(value) is list and len(value) == 0):
+        if (inputValue == None) or (type(inputValue) is list and len(inputValue) == 0):
             return
-        if value == "[]":
+        if inputValue == "":
             return
 
-        # Is the quantity part of a gas mixture AND has a dimensionless unit (if so, special handling)
-        inletgas = search.find_cuds_objects_by_oclass(
-                CMCL.INLET_GAS,
-                quantity,
-                rel=CMCL.IS_QUANTITATIVE_PROPERTY)  
+        # Register the input
+        # Get the syntactic description of this input value and unit keys that the engine will understand
+        inputSynValueKey = inpSemSynMap.synValueEntity
+        inputSynUnitKey = inpSemSynMap.synUnitEntity
 
-        special_case = (unit == "-") and (inletgas is not None and len(inletgas) == 1)
-
-        if not special_case:
-            # Regular quantity
-            name = "$INP_" + quantity.oclass.name
-            unit = quantity.unit
-
-            dict[name + "_VALUE"] = value
-            dict[name + "_UNIT"] = unit
-
-        else:
-            # NOTE - This special handling is done if the quantity is a mass or mole
-            # fraction. Currently, the only way to identify this is to check if the
-            # quantity is part of the inlet gas mixture. In future, the ontology
-            # should ideally group these into a "MIXTURE_FRACTION_QUANTITY" class.
-            name = "$INP_MIX_COMP_" + quantity.oclass.name
-            value = quantity.value
-
-            dict[name] = value
-
-            # Register the mixture unit too
-            mixtureunit = inletgas[0].unit
-            dict["$INP_MIX_COMP_UNIT"] = mixtureunit
-            
+        json_inp_dict[inputSynValueKey] = inputValue
+        # update the unit key only once
+        if inputSynUnitKey is not None and inputSynUnitKey not in json_inp_dict:
+            json_inp_dict[inputSynUnitKey] = inputUnit
 
     @staticmethod
-    def registerOutput(outputs, quantity):
-        """Registered the passed quantity as an output within the input list.
+    def getTransformedInput(root_cuds_object, inpSemSynMap, json_inp_dict):
+        """Transforms the value of a given input by
+           applying the transform function associated wits this input
+           in the inp_dict_loc dictionary.
 
         Arguments:
-            outputs  -- list of output names
-            quantity -- output quantity
+            root_cuds_object    -- Root of CUDS object representing inputs
+            inpSemSynMap        -- object providing semantic-syntactic mapping for a given input
+            json_inp_dict       -- JSON dictionary that would store a given input
+
+        Returns:
+            transf_value    -- value after the transform operation
+            transf_unit     -- unit after the transform operation
         """
-        name = quantity.oclass.name
-        outputs.append("$" + name)
-            
- 
+
+        # get the transform function handle
+        transf_func = inpSemSynMap.transFunc
+
+        # assess all oclasses and their corresponding cuds instances needed
+        # for the transformation
+
+        transf_args_values = []
+        for semEntity in inpSemSynMap.semEntity:
+            inputCuds = search.find_cuds_objects_by_oclass(semEntity, root_cuds_object, rel=None)
+            if not inputCuds:
+                return
+
+            inputCuds = inputCuds[0]
+
+            # lookup the function arguments values and create the arguments array to be passed
+            # to the function
+            inputCUDSattributeNames = [str(attr_name).lower() for attr_name in inputCuds.get_attributes().keys()]
+            if any('value_string' in attr_name for attr_name in inputCUDSattributeNames):
+                # this cuds value is stored via "value_string" attribute
+                transf_args_values.append(inputCuds.value_string)
+            else:
+                transf_args_values.append(inputCuds.value)
+
+        # if defined, add extra arguments coming from transform function dependency on input values
+        if inpSemSynMap.transFuncInpDep is not None:
+            for inputDependencyKey in inpSemSynMap.transFuncInpDep:
+                transf_args_values.append(json_inp_dict[inputDependencyKey])
+
+        # call the transform function
+        transf_value, transf_unit = transf_func(*transf_args_values)
+        return transf_value, transf_unit
+
+
     @staticmethod
-    def toCUDS(jsonData, root_cuds_object):
-        """Given JSON data representing the outputs of a remote simulation, this
-        will populate the input CUDS objects with that output data.
+    def registerOutput(root_cuds_object, json_out_list, json_inp_dict, outSemSynMap, synEntityToCUDSmap):
+        """Registers the passed quantity as an output within the input list.
+
+        Arguments:
+            root_cuds_object    -- Root of CUDS object representing inputs
+            json_out_list       -- JSON list that would store a given output
+            json_inp_dict       -- JSON inputs dictionary - used for special transformations
+            outSemSynMap        -- object providing semantic-syntactic mapping for a given output
+            synEntityToCUDSmap  -- Dictionary which stores a mapping between syntacitc (key) output
+                                   representation that engine understands and the concrete CUDS
+                                   instance that the it is associated with
+        """
+
+        # Use the oclass name/type associated with a given input from inp_dict_loc dictionary to find the concrete cuds instance
+        # that represents this input
+        outputCUDS = search.find_cuds_objects_by_oclass(outSemSynMap.semEntity, root_cuds_object, rel=None)
+        if not outputCUDS:
+            return
+
+        outputCUDS = outputCUDS[0]
+        # Get syntactic output keys
+        synValueEntities = outSemSynMap.synValueEntity
+
+        # Register the outputs
+        json_out_list.extend(synValueEntities)
+
+        # Update synEntityToCUDSmap
+        CUDSAdaptor.updateOutputsCudsMap(outputCUDS, outSemSynMap, json_inp_dict, synEntityToCUDSmap)
+
+    @staticmethod
+    def updateOutputsCudsMap(out_cuds, outSemSynMap, json_inp_dict, synEntityToCUDSmap):
+        """Given a concerete CUDS instance, dictionary 'out_dict_loc' holding metadata
+            for the egine output associated with this CUDS class entity, add an entry to
+            the synEntityToCUDSmap dictionary which binds the concrete CUDS instance with
+            the engine output.
+
+        Arguments:
+            out_cuds            -- CUDS object assosiated with a given engine output
+            outSemSynMap        -- object providing semantic-syntactic mapping for a given output
+            json_inp_dict       -- JSON inputs dictionary - used for special transformations
+            synEntityToCUDSmap  -- Dictionary which stores a mapping between syntacitc (key) output
+                                   representation that engine understands and the concrete CUDS
+                                   instance that the it is associated with
+        """
+
+        # update the synEntityToCUDSmap dictionary
+        synValueEntities = outSemSynMap.synValueEntity
+
+        synEntityToCUDS = {}
+        synEntityToCUDS[CUDS_BIND] = out_cuds
+        inputDependenciesValues = []
+        if outSemSynMap.transFunc is not None:
+            synEntityToCUDS[TRANS_FUNC_KEY] = outSemSynMap.transFunc
+            synEntityToCUDS[TRANS_FUNC_ARGS_KEY] = synValueEntities
+
+            if outSemSynMap.transFuncInpDep is not None:
+                for inputDependencyKey in outSemSynMap.transFuncInpDep:
+                    inputDependenciesValues.append(json_inp_dict[inputDependencyKey])
+                synEntityToCUDS[TRANS_FUNC_INP_DEPS_KEY] = inputDependenciesValues
+
+        # assign all mapping info under the first syntactic key
+        synEntityToCUDSmap[synValueEntities[0]] = synEntityToCUDS
+
+    @staticmethod
+    def toCUDS(jsonData, synEntityToCUDSmap):
+        """Given JSON data representing the outputs of a remote simulation and
+        synEntityToCUDSmap dictionary which provides a mapping between concrete cuds
+        instances and the corresponding engine outputs the method updates
+        appropriate cuds values and units with the simulation data.
 
         Arguments:
             jsonData           -- JSON data representing outputs
-            root_cuds_object   -- Root CUDS object
+            synEntityToCUDSmap -- Dictionary which stores a mapping between syntacitc (key) output
+                                  representation that engine understands and the concrete CUDS
+                                  instance that the it is associated with
         """
-        # NOTE - Again, this works by assuming the CUDS oclass and JSON names 
-        # match (i.e. a CUDS object with an oclass name matching the JSON string
-        # is searched for); mismatches will cause errors.
 
         # For each output in the returned JSON
-        for output_key in jsonData:
-            name = output_key[1:]
-            unit = jsonData[output_key]["unit"]
+        for key, value_unit in jsonData.items():
+            # lookup which cuds instance a given output, identified by its key, belongs to
+            if key in synEntityToCUDSmap:
+                outputCUDS = synEntityToCUDSmap[key][CUDS_BIND]
 
-            wholeValue = jsonData[output_key]["value"]
-            wholeValue = str(wholeValue).replace("[]","")
-            values = wholeValue.split(",")
+                if TRANS_FUNC_KEY in synEntityToCUDSmap[key]:
+                    value, unit = CUDSAdaptor.getTransformedResult(synEntityToCUDSmap, key, jsonData)
+                else:
+                    unit = value_unit['unit']
+                    value = value_unit['value']
 
-            # Find the corresponding CUDS output (by oclass name)
-            cuds_output = CUDSAdaptor.nameMatch(root_cuds_object, name)
-            
-            # Store returned unit and value
-            if cuds_output is not None:
-                print("Settings values for %s" % (name))
+                    # NOTE remote simulation always returns an output as a list
+                    # if the list is of length one, this is a single output
+                    # so the list is dropped
+                    # NOTE in case of the list output, it is currently converted
+                    # to string as a work around to the fact that the current
+                    # SimPhoNy implementation does not support vectors datatypes
+                    # whose length is determined at runtime.
+                    if len(value) == 1:
+                        value = value[0]
+                    else:
+                        value = ','.join(str(e) for e in value)
 
-                for value in values:
-                    cuds_output.add(
-                        CMCL.OUTPUT_VALUE(value = value, unit = unit),
-                        rel=CMCL.HAS_OUTPUT_VALUE
-                    )    
-            else:
-                print("ERROR: Could not find output quantity %s" % (name))
+                # assign values back to cuds
+                # ------------------------------
+                # unit assignment
+                outputCUDS.unit = unit
 
+                # value assignment
+                # NOTE in order to support two possible values in ontological entities (float and string) there
+                # are two "VALUE" cuds entities introduced: "VALUE" and "VALUE_STRING". These are further attached
+                # to appropriate cuds entities as attribtues. In order to check if a given cuds has either former
+                # or latter attribtue all its attributes names are put into a list below and are inspected.
+                # NOTE this code will likely change in the future once a proper vector datatype support is added
+                # to the simphony core
+                outputCUDSattributeNames = [str(attr_name).lower() for attr_name in outputCUDS.get_attributes().keys()]
+                if any('value_string' in attr_name for attr_name in outputCUDSattributeNames):
+                    # this cuds value is stored via "value_string" attribute
+                    outputCUDS.value_string = str(value)
+                else:
+                    # this cuds value is stored via "value" attribute
+                    # NOTE at the moment all "value" attribtues are of type float
+                    # NOTE It is not clear how to access datatype property of a given instance of cuds object
+                    # so, a simple instance check is used instead.
+                    outputCUDS.value = float(value)
 
     @staticmethod
-    def nameMatch(root_cuds_object, name):
-        """Searches for the first object in the inputs CUDS data
-        that has a matching oclass name.
+    def getTransformedResult(synEntityToCUDSmap, output_key, jsonData):
+        """Transforms the value of a given engine result by
+           applying the transform function associated wits this result
+           in the synEntityToCUDSmap dictionary.
 
         Arguments:
-            root_cuds_objects -- CUDS search space
-            name              -- target oclass name
+            synEntityToCUDSmap -- Dictionary which stores a mapping between syntacitc (key) output
+                                  representation that engine understands and the concrete CUDS
+                                  instance that the it is associated with
+            output_key         -- key of the output to be transformed
+            jsonData           -- JSON data generated from CUDS
+
+        Returns:
+            transf_value       -- value after the transform operation
+            transf_unit        -- unit after the transform operation
         """
-        outputs = search.find_cuds_objects_by_oclass(CMCL.OUTPUT_QUANTITY, root_cuds_object, rel=None)
-       
-        for sub in outputs:
-            if sub.oclass.name == name:
-                return sub
-    
-        return None
+
+        # get the transform function handle and its main arguments names
+        transf_func = synEntityToCUDSmap[output_key][TRANS_FUNC_KEY]
+        transf_args_keys = synEntityToCUDSmap[output_key][TRANS_FUNC_ARGS_KEY]
+
+        # lookup the function arguments values and create the arguments array to be passed
+        # to the function
+        transf_args_values = []
+        for args_key in transf_args_keys:
+            transf_args_values.append(jsonData[args_key]['value'])
+
+        # if defined, add extra arguments coming from tranform function dependency on input values
+        if TRANS_FUNC_INP_DEPS_KEY in synEntityToCUDSmap[output_key]:
+            for inputDependenciesValue in synEntityToCUDSmap[output_key][TRANS_FUNC_INP_DEPS_KEY]:
+                transf_args_values.append(inputDependenciesValue)
+
+        # call the transform function
+        transf_value, transf_unit = transf_func(*transf_args_values)
+        return transf_value, transf_unit
