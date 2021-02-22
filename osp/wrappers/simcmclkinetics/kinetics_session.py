@@ -11,11 +11,11 @@ from osp.wrappers.simcmclkinetics import CUDSAdaptor
 
 
 class KineticsSession(SimWrapperSession):
-    """This session class wraps a KineticsEngine instance, calls it, then passes the 
+    """This session class wraps a KineticsEngine instance, calls it, then passes the
     JSON data it has produced to an AgentBridge instance that runs the remote
     simulation with the Kinetics and SRM Engine Suite.
     """
-    
+
 
     def __init__(self, engine: KineticsEngine, **kwargs):
         """Initialises the session and creates a new SimulationEngine instance.
@@ -27,9 +27,9 @@ class KineticsSession(SimWrapperSession):
 
         # TODO - Do we expect an already instantiated KineticsEngine here,
         # or should we be creating it (if so, how to detect with concrete
-        # engine class to use)? 
+        # engine class to use)?
         super().__init__(engine, **kwargs)
-    
+
 
     def __str__(self):
         """Returns a textual representation.
@@ -45,7 +45,7 @@ class KineticsSession(SimWrapperSession):
 
         Note that once CUDS data is passed into this method, it should be
         considered READ-ONLY by any calling code outside this wrapper.
-        
+
         Arguments:
             root_cuds_object -- Root CUDS object representing input data
         """
@@ -58,19 +58,22 @@ class KineticsSession(SimWrapperSession):
         inputs_file.close()
         print("CUDS representation of inputs written to: ./input_results.txt")
 
+        # Determine template from root CUDS object
+        simulation_template = self._engine.determineTemplate(root_cuds_object)
+
         # Use the engine to generate JSON inputs
-        jsonInputs = self._engine.generateJSON(root_cuds_object)
+        jsonInputs, synEntityToCUDSmap = self._engine.generateJSON(root_cuds_object, simulation_template)
 
         # Run remote simulation (via AgentBridge)
         agentBridge = AgentBridge()
         jsonResult = agentBridge.runJob(json.dumps(jsonInputs))
 
         # Pass results (in JSON form) back to the engine for parsing
-        self._engine.parseResults(jsonResult, root_cuds_object)
-        
+        self._engine.parseResults(jsonResult, root_cuds_object, synEntityToCUDSmap)
+
         print("===== End: KineticsSession =====")
         print("")
-    
+
     def _apply_added(self, root_obj, buffer):
         """Not used in the this concrete wrapper.
 
@@ -100,7 +103,7 @@ class KineticsSession(SimWrapperSession):
         """
         pass
 
-    
+
     def _load_from_backend(self, uids, expired=None):
         """Not used in the this concrete wrapper.
 

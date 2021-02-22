@@ -25,6 +25,9 @@ twc.add(
     CMCL.CHANNEL_DENSITY(value=62, unit="1/cm^2"),
     CMCL.WALL_THICKNESS(value=0.165, unit="mm"),
     CMCL.CATALYST_SURFACE_MULT(value=70, unit="-"),
+    CMCL.NOX_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
+    CMCL.CO_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
+    CMCL.CXHY_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY
 )
 
@@ -38,16 +41,16 @@ untreated_exhaust.add(
 )
 
 # Composition
-composition = CMCL.INLET_GAS(unit="mole fraction")
+composition = CMCL.INLET_GAS()
 composition.add(
-    CMCL.C3H6_FRACTION(value=0.000450, unit="-"),
-    CMCL.CO_FRACTION(value=0.014200, unit="-"),
-    CMCL.NO_FRACTION(value=0.001000, unit="-"),
-    CMCL.NO2_FRACTION(value=0.969, unit="-"),
-    CMCL.O2_FRACTION(value=0.0077, unit="-"),
-    CMCL.N2_FRACTION(value=0.97665, unit="-"),
-    CMCL.H2O_FRACTION(value=0.0, unit="-"),
-    CMCL.CO2_FRACTION(value=0.0, unit="-"),
+    CMCL.C3H6_FRACTION(value=0.000450, unit="mole fraction"),
+    CMCL.CO_FRACTION(value=0.014200, unit="mole fraction"),
+    CMCL.NO_FRACTION(value=0.001000, unit="mole fraction"),
+    CMCL.NO2_FRACTION(value=0.969, unit="mole fraction"),
+    CMCL.O2_FRACTION(value=0.0077, unit="mole fraction"),
+    CMCL.N2_FRACTION(value=0.97665, unit="mole fraction"),
+    CMCL.H2O_FRACTION(value=0.0, unit="mole fraction"),
+    CMCL.CO2_FRACTION(value=0.0, unit="mole fraction"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY
 )
 
@@ -56,14 +59,6 @@ untreated_exhaust.add(
     rel=CMCL.HAS_PART
 )
 
-# Add the names of output quantities we want to get back
-outputs = CMCL.OUTPUTS()
-outputs.add(
-    CMCL.OUT_NO_OUT(),
-    CMCL.OUT_CO_OUT(),
-    CMCL.OUT_C3H6_OUT(),
-    rel=CMCL.HAS_PART)
-
 # Initialise the main EAT process
 eat_process = CMCL.EAT_PROCESS()
 eat_process.add(
@@ -71,9 +66,6 @@ eat_process.add(
     untreated_exhaust,
     rel=CMCL.HAS_PROPER_PARTICIPANT
 )
-
-# Add outputs
-eat_process.add(outputs, rel=CMCL.HAS_PART)
 
 # Construct an applicable engine instance
 engine = EATEngine()
