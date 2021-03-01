@@ -26,7 +26,7 @@ cb_powder = CMCL.CARBON_BLACK_POWDER()
 
 # Set the physical propeties of the reactor
 cb_reactor.add(
-    CMCL.LENGTH(value=1.0, unit="m"),
+    CMCL.LENGTH(value=0.64, unit="m"),
     CMCL.CROSS_SECTION(value=0.000201062, unit="m^2"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
 
