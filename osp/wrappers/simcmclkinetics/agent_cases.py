@@ -33,7 +33,7 @@ MOMIC = SimCaseTemplate(
             IOSemSynMap(semEntity=CMCL.N2_FRACTION, synValueEntity='$INP_MIX_COMP_N2_FRACTION', synUnitEntity='$INP_MIX_COMP_UNIT')],
 
     outputs=[IOSemSynMap(semEntity=CMCL.MEAN_PARTICLE_SIZE, synValueEntity=['$OUT_MEAN_PART_DIAMETER']),
-             IOSemSynMap(semEntity=CMCL.PARTICLE_NUMBER_DENSITY, synValueEntity=['$OUT_PART_NUMBER']),
+             IOSemSynMap(semEntity=CMCL.PARTICLE_NUMBER_DENSITY, synValueEntity=['$OUT_PART_NUMBER_DENS'],transFunc=iotransf.getLastPartNumDens),
              IOSemSynMap(semEntity=CMCL.PARTICLE_VOLUME_FRACTION, synValueEntity=['$OUT_PART_VOLFRAC'])]
 )
 
