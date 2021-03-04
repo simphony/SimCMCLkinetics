@@ -11,8 +11,8 @@ from osp.wrappers.simcmclkinetics import EATEngine
 # for execution.
 #
 # Replicated the inputs.json of the use case; note that these values
-# were taken from the following kinetics-backend commit:
-# 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
+# (except PSD) were taken from the following kinetics-backend commit:
+# 3d19bb48da1033d7f9ef76800aa24e578e260eeb
 
 # Set the level of the logger in OSP Core
 logging.getLogger('osp.core').setLevel(logging.ERROR)
@@ -77,19 +77,6 @@ untreated_exhaust.add(
     CMCL.PRESSURE(value=97835.26926, unit="Pa"),
     particle_psd,
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY
-)
-
-# Composition
-composition = CMCL.INLET_GAS()
-composition.add(
-    CMCL.O2_FRACTION(value=0.0077, unit="mole fraction"),
-    CMCL.N2_FRACTION(value=0.97665, unit="mole fraction"),
-    rel=CMCL.HAS_QUANTITATIVE_PROPERTY
-)
-
-untreated_exhaust.add(
-    composition,
-    rel=CMCL.HAS_PART
 )
 
 # Initialise the main EAT process

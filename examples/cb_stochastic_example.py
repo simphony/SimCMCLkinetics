@@ -12,7 +12,7 @@ from osp.core.namespaces import CITY
 # for execution.
 # Replicate the inputs.json of the use case; note that these values
 # were taken from the following kinetics-backend commit:
-# 28e848ac3ac5ce22d63ed4ca11af8273ad1b877f
+# 3d19bb48da1033d7f9ef76800aa24e578e260eeb
 
 # Set the level of the logger in OSP Core
 logging.getLogger('osp.core').setLevel(logging.ERROR)
@@ -26,7 +26,7 @@ cb_powder = CMCL.CARBON_BLACK_POWDER()
 
 # Set the physical propeties of the reactor
 cb_reactor.add(
-    CMCL.LENGTH(value=0.64, unit="m"),
+    CMCL.LENGTH(value=1.0, unit="m"),
     CMCL.CROSS_SECTION(value=0.000201062, unit="m^2"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
 
@@ -62,15 +62,6 @@ cb_powder.add(CMCL.PARTICLE_MEAN_FRACTAL_DIMENSION(value=0.0, unit=""),
               primary_psd,
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
 
-# Add the names of output quantities we want to get back
-#requested_outputs.add(
-#    CMCL.OUT_PART_SIZE_DISTR_Y(),
-#    CMCL.OUT_PART_SIZE_DISTR_X(),
-#    CMCL.OUT_PRIM_SIZE_DISTR_Y(),
-#    CMCL.OUT_PRIM_SIZE_DISTR_X(),
-#    CMCL.OUT_PART_AVG_FRACT_DIM(),
-#    rel=CMCL.HAS_PART)
-
 # Add the heterogeneous mixture to the reactor
 cb_reactor.add(heterog_mixture, rel=CMCL.HAS_PART)
 
@@ -80,9 +71,6 @@ cb_synthesis.add(
     cb_reactor,
     cb_powder,
     rel=CMCL.HAS_PROPER_PARTICIPANT)
-
-# Add outputs
-#cb_synthesis.add(outputs, rel=CMCL.HAS_PART)
 
 # Construct an applicable engine instance
 engine = CarbonBlackEngine()

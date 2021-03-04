@@ -1,5 +1,8 @@
 import osp.wrappers.simcmclkinetics.io_transf_util as ioutil
 
+def getLastPartNumDens(PN_OUT):
+    return PN_OUT[-1], '#/m^3'
+
 def getGPFFiltrationEff(P_IN, P_OUT):
     """Calculates GPF filtration efficiency in terms of particle mass or number.
 
@@ -69,8 +72,8 @@ def getPSD(dNdlogD, D, T, P):
 
     # setting fixed air composition
     R_gas  = 8.31446261815324
-    O2_mole_frac = 0.0077
-    N2_mole_frac = 0.97665
+    O2_mole_frac = 0.22 # hardcoded to match the backend values
+    N2_mole_frac = 0.78 # hardcoded to match the backend values
     M_O2 = 0.015999  # [kg/mol]
     M_N2 = 0.0140067  # [kg/mol]
     Mav = M_O2 * O2_mole_frac + M_N2 * N2_mole_frac  #[kg/mol]
