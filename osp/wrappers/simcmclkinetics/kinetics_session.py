@@ -16,6 +16,14 @@ class KineticsSession(SimWrapperSession):
     simulation with the Kinetics and SRM Engine Suite.
     """
 
+    # Possible model flags
+    CB_STOCHASIC = 1
+    CB_MOMIC = 2
+    EAT_GPF = 3
+    EAT_TWC = 4
+
+    # Current model flag
+    modelFlag = 1
 
     def __init__(self, engine: KineticsEngine, **kwargs):
         """Initialises the session and creates a new SimulationEngine instance.
@@ -59,7 +67,7 @@ class KineticsSession(SimWrapperSession):
         print("CUDS representation of inputs written to: ./input_results.txt")
 
         # Determine template from root CUDS object
-        simulation_template = self._engine.determineTemplate(root_cuds_object)
+        simulation_template = self._engine.determineTemplate(root_cuds_object, self.modelFlag)
 
         # Use the engine to generate JSON inputs
         jsonInputs, synEntityToCUDSmap = self._engine.generateJSON(root_cuds_object, simulation_template)
@@ -117,3 +125,18 @@ class KineticsSession(SimWrapperSession):
                 yield self._registry.get(uid)
             else:
                 yield None
+
+
+    def setModelFlag(self, flag):
+        """Sets the flag determining the simulation model to use.
+
+        Args:
+            flag (integer): Integer representing model flag, see KineticsSession for possible values.
+        """
+        if (flag <= 0) or (flag > 4):
+            raise ValueError("Invalid model flag!")
+
+        # Store the flag
+        self.modelFlag = flag
+        print("Model flag changed to #" + str(self.modelFlag) + ".")
+

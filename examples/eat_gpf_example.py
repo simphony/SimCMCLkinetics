@@ -68,6 +68,7 @@ engine = EATEngine()
 
 # Construct a wrapper and run a new session
 with KineticsSession(engine) as session:
+    session.setModelFlag(KineticsSession.EAT_GPF)
     wrapper = CMCL.wrapper(session=session)
     cb_synthesis_w = wrapper.add(eat_process, rel=CMCL.HAS_PART)
     wrapper.session.run()

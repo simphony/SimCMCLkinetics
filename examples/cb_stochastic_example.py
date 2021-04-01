@@ -77,6 +77,7 @@ engine = CarbonBlackEngine()
 
 # Construct a wrapper and run a new session
 with KineticsSession(engine) as session:
+    session.setModelFlag(KineticsSession.CB_STOCHASIC)
     wrapper = CMCL.wrapper(session=session)
     cb_synthesis_w = wrapper.add(cb_synthesis, rel=CMCL.HAS_PART)
     wrapper.session.run()
