@@ -6,6 +6,7 @@ from osp.core.namespaces import CMCL
 from osp.wrappers.simcmclkinetics import AgentBridge
 from osp.wrappers.simcmclkinetics import CUDSAdaptor
 from osp.wrappers.simcmclkinetics import KineticsEngine
+from osp.wrappers.simcmclkinetics import KineticsSession
 from osp.core.utils import pretty_print
 import osp.wrappers.simcmclkinetics.agent_cases as agent_cases
 
@@ -14,32 +15,29 @@ class EATEngine(KineticsEngine):
     """
 
 
-    def determineTemplate(self, root_cuds_object) -> str:
+    def determineTemplate(self, root_cuds_object, modelFlag) -> str:
         """Determines which simulation template to use based on the input
         CUDS data.
 
         Arguments:
             root_cuds_object -- Root CUDS object representing input data
+            modelFlag -- Integer for model (see KineticsSession for values)
 
         Returns:
             Appropriate simulation template name
         """
 
-        # TODO - This will probably need revision once we know exactly
-        # what CUDS objects the core GUI will be passing to us.
+        if modelFlag == KineticsSession.EAT_GPF:
+            # GPF
+            simulation_template = agent_cases.EAT_GPF
 
-        # Note - The incoming CUDS objects here should have come from a
-        # EAT specific GUI page presented by the core platform.
-        # This means that we can safely already assume it's one of the
-        # two EAT use cases and ignore EAT.
+        elif modelFlag == KineticsSession.EAT_TWC:
+            # TWO
+            simulation_template = agent_cases.EAT_TWC
 
-        # Attempt to find the TWC and GPF objects
-        twc = search.find_cuds_objects_by_oclass(CMCL.TWC, root_cuds_object, rel=None)
-        gpf = search.find_cuds_objects_by_oclass(CMCL.GPF, root_cuds_object, rel=None)
-
-        if twc:
-            return agent_cases.EAT_TWC
-        elif gpf:
-            return agent_cases.EAT_GPF
         else:
             return "ERROR"
+
+        print("Detected simulation template as %s" % (simulation_template.template))
+        return simulation_template
+      

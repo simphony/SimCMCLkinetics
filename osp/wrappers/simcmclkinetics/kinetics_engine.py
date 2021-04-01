@@ -119,12 +119,13 @@ class KineticsEngine(ABC):
 
 
     @abstractmethod
-    def determineTemplate(self, root_cuds_object) -> str:
+    def determineTemplate(self, root_cuds_object, modelFlag) -> str:
         """Determines which simulation template to use based on the input
         CUDS data.
 
         Arguments:
             root_cuds_object -- Root CUDS object representing input data
+            modelFlag -- Integer for model (see KineticsSession for values)
 
         Returns:
             Appropriate simulation template name

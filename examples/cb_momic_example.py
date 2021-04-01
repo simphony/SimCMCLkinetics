@@ -69,6 +69,7 @@ engine = CarbonBlackEngine()
 
 # Construct a wrapper and run a new session
 with KineticsSession(engine) as session:
+    session.setModelFlag(KineticsSession.CB_MOMIC)
     wrapper = CMCL.wrapper(session=session)
 
     # Add CB Synthesis process to the wrapper
