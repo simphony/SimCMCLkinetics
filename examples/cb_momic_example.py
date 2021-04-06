@@ -44,16 +44,6 @@ heterog_mixture.add(
     CMCL.PRESSURE(value=1.0, unit="atm"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
 
-# Initialise the CB powder
-# NOTE - This is required to determine if the CUDS objects represents the MoMIC
-# use case, BUT we don't it to propagate to the final JSON request so I've used
-# an empty list as a sentinel here.
-cb_powder.add(
-    CMCL.MEAN_PARTICLE_SIZE(value=0.0, unit = ""),
-    CMCL.PARTICLE_NUMBER_DENSITY(value=0.0, unit = ""),
-    CMCL.PARTICLE_VOLUME_FRACTION(value=0.0, unit = ""),
-    rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
-
 # Add the heterogeneous mixture to the reactor
 cb_reactor.add(heterog_mixture, rel=CMCL.HAS_PART)
 

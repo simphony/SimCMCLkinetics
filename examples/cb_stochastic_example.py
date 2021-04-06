@@ -4,7 +4,6 @@ import logging
 from osp.core.namespaces import CMCL
 from osp.wrappers.simcmclkinetics import KineticsSession
 from osp.wrappers.simcmclkinetics import CarbonBlackEngine
-from osp.core.namespaces import CITY
 
 
 # This examples aims to run the CarbonBlack_StochasticSolver use case by hard-coding
@@ -41,25 +40,6 @@ inlet_mixture.add(
 # Add physical quantities to the heterogeneous mixture
 heterog_mixture.add(
     CMCL.PRESSURE(value=1.0, unit="atm"),
-    rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
-
-# Initialise the CB powder
-# NOTE - This is required to determine if the CUDS objects represents the MoMIC
-# use case, BUT we don't it to propagate to the final JSON request so I've used
-# an empty list as a sentinel here.
-particle_psd = CMCL.PARTICLE_SIZE_DISTRIBUTION()
-particle_psd.add(CMCL.PARTICLE_NUMBER_DENSITIES(value_string="", unit=""),
-        CMCL.PARTICLE_SIZE_CLASSES(value_string="", unit=""),
-         rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
-
-primary_psd = CMCL.PRIMARY_PARTICLE_SIZE_DISTRIBUTION()
-primary_psd.add(CMCL.PRIMARY_PARTICLE_NUMBER_DENSITIES(value_string="", unit=""),
-        CMCL.PRIMARY_PARTICLE_SIZE_CLASSES(value_string="", unit=""),
-         rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
-
-cb_powder.add(CMCL.PARTICLE_MEAN_FRACTAL_DIMENSION(value=0.0, unit=""),
-              particle_psd,
-              primary_psd,
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY)
 
 # Add the heterogeneous mixture to the reactor

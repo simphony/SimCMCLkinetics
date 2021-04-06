@@ -27,8 +27,6 @@ gpf.add(
     CMCL.PERMEABILITY(value=4.0e-13, unit="m^2"),
     CMCL.PORE_DIAMETER(value=1.5e-05, unit="m"),
     CMCL.WALL_POROSITY(value=0.49, unit="-"),
-    CMCL.PM_FILTRATION_EFFICIENCY(value=0.0, unit="-"),
-    CMCL.PN_FILTRATION_EFFICIENCY(value=0., unit="-"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY
 )
 

@@ -25,9 +25,6 @@ twc.add(
     CMCL.CHANNEL_DENSITY(value=62, unit="1/cm^2"),
     CMCL.WALL_THICKNESS(value=0.165, unit="mm"),
     CMCL.CATALYST_SURFACE_MULT(value=70, unit="-"),
-    CMCL.NOX_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
-    CMCL.CO_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
-    CMCL.CXHY_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
     rel=CMCL.HAS_QUANTITATIVE_PROPERTY
 )
 

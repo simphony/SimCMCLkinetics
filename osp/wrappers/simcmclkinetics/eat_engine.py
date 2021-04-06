@@ -27,13 +27,49 @@ class EATEngine(KineticsEngine):
             Appropriate simulation template name
         """
 
+        # Find the EAT Process object
+        eat_process = search.find_cuds_objects_by_oclass(
+            CMCL.EAT_PROCESS,
+            root_cuds_object,
+            rel=CMCL.HAS_PART
+        )[0]
+
         if modelFlag == KineticsSession.EAT_GPF:
             # GPF
             simulation_template = agent_cases.EAT_GPF
 
+            # Find GPF object
+            gpf = search.find_cuds_objects_by_oclass(
+                CMCL.GPF, 
+                eat_process, 
+                rel=CMCL.HAS_PROPER_PARTICIPANT
+            )[0]
+
+            # Add outputs
+            gpf.add(
+                CMCL.PM_FILTRATION_EFFICIENCY(value=0.0, unit="-"),
+                CMCL.PN_FILTRATION_EFFICIENCY(value=0., unit="-"),
+                rel=CMCL.HAS_QUANTITATIVE_PROPERTY
+            )
+
         elif modelFlag == KineticsSession.EAT_TWC:
-            # TWO
+            # TWC
             simulation_template = agent_cases.EAT_TWC
+
+            # Find TWC object
+            twc = search.find_cuds_objects_by_oclass(
+                CMCL.TWC, 
+                eat_process, 
+                rel=CMCL.HAS_PROPER_PARTICIPANT
+            )[0]
+
+            # Add outputs
+            twc.add(
+                CMCL.NOX_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
+                CMCL.CO_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
+                CMCL.CXHY_CAPTURE_EFFICIENCY(value=0.0, unit="-"),
+                rel=CMCL.HAS_QUANTITATIVE_PROPERTY
+            )
 
         else:
             return "ERROR"
