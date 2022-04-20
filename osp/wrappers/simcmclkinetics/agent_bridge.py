@@ -2,6 +2,7 @@ import requests
 import json
 import urllib.parse
 import time
+import os
 
 class AgentBridge:
     """Class to handle communicating with the KineticsAgent servlet via a
@@ -15,7 +16,7 @@ class AgentBridge:
     MAX_ATTEMPTS = 60
 
     # Base URL for HTTP requests
-    BASE_URL = "http://kg.cmclinnovations.com:8082/KineticsAgent/job/"
+    BASE_URL_DEFAULT = "http://kg.cmclinnovations.com:8082/KineticsAgent/job/"
 
     # Additional URL part for job submission
     SUBMISSION_URL_PART = "request?query="
@@ -25,7 +26,10 @@ class AgentBridge:
 
     # ID of generated job
     jobID = None
-  
+
+    @property
+    def base_url(self) -> str:
+        return os.environ.get('KINETICS_AGENT_URL', self.BASE_URL_DEFAULT)
 
     def runJob(self, jsonString: str):
         """Runs a complete Kinetics simulation on a remote machine via use of HTTP requests.
@@ -70,7 +74,7 @@ class AgentBridge:
         Returns:
             True if a job was succesfully submitted
         """
-       
+
         # Check that we have JSON data
         if not jsonString:
             print("Supplied JSON string is empty!")
@@ -128,7 +132,7 @@ class AgentBridge:
 
         print("Job finished successfully, output data received.")
         return result
-     
+
 
     def buildSubmissionURL(self, jsonString: str) -> str:
         """Builds the submission URL for the input JSON string.
@@ -139,9 +143,9 @@ class AgentBridge:
         Returns:
             Full job submission URL
         """
-        url = self.BASE_URL + self.SUBMISSION_URL_PART
+        url = self.base_url + self.SUBMISSION_URL_PART
         url += self.encodeURL(jsonString)
-        return url   
+        return url
 
 
     def buildOutputURL(self) -> str:
@@ -153,7 +157,7 @@ class AgentBridge:
         Returns:
             Full output request URL
         """
-        url = self.BASE_URL + self.OUTPUT_URL_PART
+        url = self.base_url + self.OUTPUT_URL_PART
 
         # Build JSON from job ID
         jsonString = "{\"jobId\":\"" + self.jobID + "\"}"
@@ -176,7 +180,7 @@ class AgentBridge:
 
     def __getJobResults(self, url: str, attempt: int):
         """Make a HTTP request to get the final results of the submitted job.
-        Recurses until the request reports that the job is finished (or a 
+        Recurses until the request reports that the job is finished (or a
         maximum number of attempts is reached)
 
         Arguments:
@@ -205,7 +209,7 @@ class AgentBridge:
         returnedRaw = response.text
 
         # Parse into JSON
-        returnedJSON = json.loads(returnedRaw)   
+        returnedJSON = json.loads(returnedRaw)
 
         # Detect if the job has actually finished successfully
         if("message" in returnedJSON):
@@ -214,9 +218,9 @@ class AgentBridge:
             if((message.find("executing") >= 0) or (message.find("executed") >= 0)):
                 print("Job still running (attempt %s of %s)..." % (attempt, self.MAX_ATTEMPTS))
 
-                # Wait 
+                # Wait
                 time.sleep(self.POLL_INTERVAL)
                 return self.__getJobResults(url, attempt + 1)
-            
+
         else:
             return returnedJSON
