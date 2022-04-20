@@ -44,7 +44,7 @@ def kinetics_mock_agent():
             )
         else:
             # activate virt env for unix
-            agent_proc_args.extend([".",os.path.join(virt_env,"bin","activate.sh"), ";"])
+            agent_proc_args.extend([".",os.path.join(virt_env,"bin","activate"), ";"])
 
     test_host = os.environ['AGENT_TEST_HOST']
     test_port = os.environ['AGENT_TEST_PORT']
@@ -69,7 +69,6 @@ def kinetics_mock_agent():
     # Give the server time to start
     time.sleep(2)
     # Check if started successfully
-    assert not agent_proc.poll()
     yield agent_proc
     # Shut it down at the end of the pytest session
     if os.name == 'nt':
