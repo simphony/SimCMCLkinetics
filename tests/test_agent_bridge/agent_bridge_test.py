@@ -1,9 +1,4 @@
 from osp.wrappers.simcmclkinetics import AgentBridge
-import os
-import sys
-import pytest
-
-
 
 def test_encodeURL(agent_bridge: AgentBridge):
     """Tests encoding of simple JSON string
@@ -58,11 +53,7 @@ def test_runJob(agent_bridge: AgentBridge):
     """
     agent_bridge.jobID = None
 
-    # Load the input JSON string for testing
-    with open(os.path.join(sys.path[0], "test_input.json"), "r") as file:
-        jsonString = file.read().replace("\n", "")
-
     # Try to run the job
-    result = agent_bridge.runJob(jsonString)
+    result = agent_bridge.runJob('{}')
 
     assert result is not None
