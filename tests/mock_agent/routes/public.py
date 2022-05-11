@@ -1,9 +1,17 @@
+from sys import exc_info
 from flask import Blueprint, request
 from flask import current_app
+from ..schemas import use_case_base, use_case_momic, use_case_stoch
 from pprint import pformat
 import json
 import uuid
 from typing import Dict
+
+class InputSchemaException(Exception):
+    """Raise if input does not match the schema."""
+
+class UnsupportedCaseException(Exception):
+    """Raise if the request case is not supported."""
 
 # Blueprint Configuration
 kinetics_agent_bp = Blueprint("kinetics_agent_bp", __name__)
@@ -17,32 +25,51 @@ def runSimulation():
     current_app.logger.debug("runSimulation call")
     current_app.logger.debug(f"request.args['query'] = {request.args['query']}")
     query = json.loads(request.args["query"])
+
+    # this validates inputs against the base schema
+    error = use_case_base.BaseUseCaseSchema().validate(query)
+    if error:
+        current_app.logger.debug(f"Error: Incorrect inputs: {error}")
+        return error, 400
+
     jobId = str(uuid.uuid4())
 
     current_app.logger.debug("jsonified query:")
     current_app.logger.debug(pformat(query))
-
     outputs = {}
-
-    if query['Case'] == 'CarbonBlack_MoMICSolver':
-        generate_outputs_func = _generate_momic_outputs
-    elif query['Case'] == 'CarbonBlack_StochasticSolver':
-        generate_outputs_func = _generate_stoch_outputs
-    else:
-        raise Exception("Incorrect simulation case")
-
-    current_app.logger.debug(f"Running the {query['Case']}")
     try:
-        outputs = generate_outputs_func()
+        outputs = _run_case(inputs=query)
+    except UnsupportedCaseException as e:
+        current_app.logger.exception(msg="Requested Case is not supported.", exc_info=e)
+        return "Requested Case is not supported.", 400
+    except InputSchemaException as e:
+        current_app.logger.exception(msg="Invalid inputs.", exc_info=e)
+        return "Invalid inputs.", 400
     except Exception as e:
-        current_app.logger.exception("Problem with generating outputs.")
+        current_app.logger.exception(msg="Problem with generating the results.", exc_info=e)
+        return "Problem with generating the results.", 400
+
     current_app.logger.debug("Generated outputs:")
     current_app.logger.debug(pformat(outputs))
 
     JOB_INPUTS[jobId] = outputs
-
     return {"jobId": jobId}, 200
 
+def _run_case(inputs: Dict) -> Dict:
+    case = inputs['Case']
+    if case == 'CarbonBlack_MoMICSolver':
+        generate_outputs_func = _generate_momic_outputs
+    elif case == 'CarbonBlack_StochasticSolver':
+        generate_outputs_func = _generate_stoch_outputs
+    else:
+        raise UnsupportedCaseException(
+            (
+                f"Error: Selected Case: {inputs['Case']} is not supported. "
+                f"Please choose from the following options: {SUPPORTED_CASES}."
+            )
+        )
+    outputs = generate_outputs_func(inputs=inputs)
+    return outputs
 
 # Show an instructional message at the app root
 @kinetics_agent_bp.route("/output/request", methods=["GET"])
@@ -54,24 +81,21 @@ def getOutputs():
     try:
         outputs = JOB_INPUTS.pop(jobId)
     except KeyError:
-        current_app.logger.error("Incorrect simulation inputs.")
-        return outputs, 400
+        current_app.logger.error(f"The requested job: {jobId} does not exist.")
+        return f"The requested job: {jobId} does not exist.", 400
     return outputs, 200
 
 
-def _generate_momic_outputs() -> Dict:
+def _generate_momic_outputs(inputs: Dict) -> Dict:
+    error = use_case_momic.MomicUseCaseSchema().validate(inputs)
+    if error:
+        raise InputSchemaException(f"Error: Incorrect MoMIC inputs: {error}")
     return json.loads("""{
                 "$OUT_MEAN_PART_DIAMETER": {
                     "value": [
                         62.2685
                     ],
                     "unit": "nm"
-                },
-                "$OUT_PART_NUMBER": {
-                    "value": [
-                        313308000.0
-                    ],
-                    "unit": "#"
                 },
                 "$OUT_PART_VOLFRAC": {
                     "value": [
@@ -91,7 +115,10 @@ def _generate_momic_outputs() -> Dict:
             }""")
 
 
-def _generate_stoch_outputs() -> Dict:
+def _generate_stoch_outputs(inputs: Dict) -> Dict:
+    error = use_case_stoch.StochasticUseCaseSchema().validate(inputs)
+    if error:
+        raise InputSchemaException(f"Error: Incorrect Stochastic inputs: {error}")
     return json.loads("""
             {
                 "$OUT_PART_SIZE_DISTR_Y": {
