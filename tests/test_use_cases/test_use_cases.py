@@ -2,6 +2,7 @@ from osp.core.cuds import Cuds
 from osp.core import CMCL
 import osp.core.utils.simple_search as cuds_search
 from osp.wrappers.simcmclkinetics.carbon_black_engine import CarbonBlackEngine
+from osp.wrappers.simcmclkinetics.eat_engine import EATEngine
 from osp.wrappers.simcmclkinetics.kinetics_session import KineticsSession
 from osp.wrappers.simcmclkinetics import KineticsEngine
 from functools import partial
@@ -113,3 +114,68 @@ def test_carbon_black_stochastoc(carbon_black_cuds: Cuds, flask_client, mocker) 
 
     assert len(part_fract_dim) == 1
     assert part_fract_dim[0].value != 0.0
+
+
+def test_eat_twc(eat_twc_cuds: Cuds, flask_client, mocker) -> None:
+    wrapper = _case_runner(
+        case_cuds= eat_twc_cuds,
+        engine= EATEngine(),
+        model_flag= KineticsSession.EAT_TWC,
+        client = flask_client,
+        mocker = mocker)
+
+    # Find all the output CUDS
+    nox_capt_eff = cuds_search.find_cuds_objects_by_oclass(
+        oclass = CMCL.NOX_CAPTURE_EFFICIENCY,
+        root = wrapper,
+        rel=None
+    )
+    co_capt_eff = cuds_search.find_cuds_objects_by_oclass(
+        oclass = CMCL.CO_CAPTURE_EFFICIENCY,
+        root = wrapper,
+        rel=None
+    )
+    cxhy_capt_eff = cuds_search.find_cuds_objects_by_oclass(
+        oclass = CMCL.CXHY_CAPTURE_EFFICIENCY,
+        root = wrapper,
+        rel=None
+    )
+
+    # check all the output CUDS
+    assert len(nox_capt_eff) == 1
+    assert nox_capt_eff[0].value != 0.0
+
+    assert len(co_capt_eff) == 1
+    assert co_capt_eff[0].value != 0.0
+
+    assert len(cxhy_capt_eff) == 1
+    assert cxhy_capt_eff[0].value != 0.0
+
+def test_eat_gpf(eat_gpf_cuds: Cuds, flask_client, mocker) -> None:
+    wrapper = _case_runner(
+        case_cuds= eat_gpf_cuds,
+        engine= EATEngine(),
+        model_flag= KineticsSession.EAT_GPF,
+        client = flask_client,
+        mocker = mocker)
+
+
+    # Find all the output CUDS
+    pm_eff = cuds_search.find_cuds_objects_by_oclass(
+        oclass = CMCL.PM_FILTRATION_EFFICIENCY,
+        root = wrapper,
+        rel=None
+    )
+    pn_eff = cuds_search.find_cuds_objects_by_oclass(
+        oclass = CMCL.PN_FILTRATION_EFFICIENCY,
+        root = wrapper,
+        rel=None
+    )
+
+
+    # check all the output CUDS
+    assert len(pm_eff) == 1
+    assert pm_eff[0].value != 0.0
+
+    assert len(pn_eff) == 1
+    assert pn_eff[0].value != 0.0
