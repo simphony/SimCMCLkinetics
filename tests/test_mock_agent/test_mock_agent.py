@@ -1,4 +1,3 @@
-import mock_agent
 import pytest
 import json
 import urllib.parse

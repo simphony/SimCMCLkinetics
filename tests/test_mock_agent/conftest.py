@@ -1,6 +1,5 @@
-from osp.wrappers.simcmclkinetics import AgentBridge
-import pytest
 import json
+import pytest
 
 @pytest.fixture()
 def momic_inputs() -> str:
