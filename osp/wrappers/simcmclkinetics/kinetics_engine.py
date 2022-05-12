@@ -119,7 +119,7 @@ class KineticsEngine(ABC):
 
 
     @abstractmethod
-    def determineTemplate(self, root_cuds_object, modelFlag) -> str:
+    def determineTemplate(self, root_cuds_object, modelFlag) -> str: # pragma: no cover
         """Determines which simulation template to use based on the input
         CUDS data.
 

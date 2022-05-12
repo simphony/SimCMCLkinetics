@@ -160,7 +160,7 @@ class AgentBridge:
         url = self.base_url + self.OUTPUT_URL_PART
 
         # Build JSON from job ID
-        jsonString = "{\"jobId\":\"" + self.jobID + "\"}"
+        jsonString = "{\"jobId\":\"" + str(self.jobID) + "\"}"
 
         url += self.encodeURL(jsonString)
         return url

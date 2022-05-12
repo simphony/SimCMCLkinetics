@@ -4,15 +4,53 @@
 SimPhoNy wrapper for the CMCL's "*k*inetics & SRM Engine Suite" software.
 
 ## Requirements
-- Python 3.7 (or higher)
-- Build the OSP Core library
-- Install the CMCL sample ontology using `pico install cmcl.ontology.yml`
+- docker
+- docker-compose
 
 ## Build instructions
-Once all requirements and libraries are installed, build the code by running `pip install -e .` from the root directory.
+In order to create the kinetics osp wrapper docker image run:
+```bash
+./docker_install.sh
+```
 
 ## Execution
-To execute the wrapper, simply run any of the example scripts. Launch settings for use with Visual Studio Code have been provided to run these files.
+To run the kinetics wrapper, use the following commands:
+
+```bash
+ ./run_container.sh [command] [options]
+ #  where:
+ #  command - choose between running tests and examples
+ #            if not provided, defaults to tests
+ #            * tests    - launches all tests using the MOCK kinetics
+ #                         disregards any other options
+ #            * examples - launches examples using the REAL kinetics
+ #                         agent, accepts further options
+ #            * bash     - opens container bash terminal
+ #                         disregards any other options
+ #  options - control which examples are run, if not defined all
+ #            examples are run, possible values:
+ #            * cb       - run all carbon black examples
+ #            * cb momic - run carbon black momic example
+ #            * cb stoch - run carbon black stochastic example
+ #            * eat      - run all eat examples
+ #            * eat twc  - run eat twc example
+ #            * eat gpd  - run eat gpf example
+ #
+ # Some examples:
+ # 1. run all the tests
+./run_container.sh
+ # 2. run all the tests
+./run_container.sh tests
+ # 3. run all the examples
+ ./run_container.sh examples
+ # 4. run all carbon black examples
+./run_container.sh examples cb
+ # 5. run carbon black momic example
+./run_container.sh examples cb momic
+ # 5. run all eat examples
+./run_container.sh examples eat
+```
+
 
 Each example file has been created to generate the expected inputs (with sample values) for each of the four SimDOME use cases attributed to CMCL.
 

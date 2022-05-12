@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  kinetics_osp_wrapper:
+    build:
+      context: .
+      args:
+        KINETICS_AGENT_BASE_URL: $KINETICS_AGENT_BASE_URL
+    image: cmcl/sim_cmcl_kinetics_osp_wrapper:$SIM_CMCL_KINETICS_OSP_WRAPPER_VERSION
+    container_name: kinetics_osp_wrapper
+    cap_drop:
+      - ALL
+    ports:
+      - 5001:5000

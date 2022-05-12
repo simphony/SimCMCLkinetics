@@ -1,8 +1,21 @@
 from osp.wrappers.simcmclkinetics import AgentBridge
-import os
-import sys
 import pytest
+import json
 
+def _mocked_request_get(url):
+    class MockResponse:
+        def __init__(self, json_data, status_code):
+            self.json_data = json_data
+            self.text = json.dumps(json_data)
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+    if 'output' in url:
+        return MockResponse({"key1": "value1"}, 200)
+    else:
+        return MockResponse({"jobId": "testId"}, 200)
 
 
 def test_encodeURL(agent_bridge: AgentBridge):
@@ -53,16 +66,32 @@ def test_buildOutputURL(agent_bridge: AgentBridge):
     assert url == expectedURL
 
 
-def test_runJob(agent_bridge: AgentBridge):
+def test_runJob(agent_bridge: AgentBridge, mocker):
     """Tests if a job can be run via HTTP requests using the runJob() function of the AgentBridge class.
     """
-    agent_bridge.jobID = None
-
-    # Load the input JSON string for testing
-    with open(os.path.join(sys.path[0], "test_input.json"), "r") as file:
-        jsonString = file.read().replace("\n", "")
+    mocker.patch("osp.wrappers.simcmclkinetics.agent_bridge.requests.get",
+        side_effect=_mocked_request_get)
 
     # Try to run the job
-    result = agent_bridge.runJob(jsonString)
+    result = agent_bridge.runJob('{}')
 
     assert result is not None
+
+
+@pytest.mark.parametrize(
+    "jsonString, result",
+    [
+        ("", False),
+        ('{"key": "value"}', True)
+    ]
+)
+def test_submitJob(jsonString: str, result: bool, agent_bridge: AgentBridge, mocker):
+    """Tests if a job can be run via HTTP requests using the runJob() function of the AgentBridge class.
+    """
+    mocker.patch("osp.wrappers.simcmclkinetics.agent_bridge.requests.get",
+        side_effect=_mocked_request_get)
+
+    # Try to run the job
+    result = agent_bridge.submitJob(jsonString)
+
+    assert result == result
