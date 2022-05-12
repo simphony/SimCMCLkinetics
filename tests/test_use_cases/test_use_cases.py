@@ -10,6 +10,8 @@ import urllib.parse
 def _case_runner(case_cuds: Cuds, engine: KineticsEngine, model_flag: int, client, mocker) -> Cuds:
     mocker.patch("osp.wrappers.simcmclkinetics.agent_bridge.requests.get",
         side_effect=partial(_flask_app_client, client = client))
+    mocker.patch("osp.wrappers.simcmclkinetics.agent_bridge.AgentBridge.POLL_INTERVAL",
+        return_value=0)
     with KineticsSession(engine) as session:
         session.setModelFlag(model_flag)
         wrapper = CMCL.wrapper(session=session)
