@@ -1,7 +1,8 @@
-import pytest
 import logging
+
+import pytest
 import mock_agent
-import json
+
 
 def pytest_configure(config):
   logger = logging.getLogger('osp.core.ontology')
