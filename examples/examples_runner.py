@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from osp.core.namespaces import cuba, CMCL
 from osp.core.session import SimWrapperSession
@@ -74,4 +75,31 @@ if __name__ == '__main__':
     logging.getLogger("osp.core.ontology").setLevel(logging.ERROR)
     logger = logging.getLogger(__name__)
 
-    run_cb_momic()
+    args = dict(enumerate(sys.argv))
+
+    case_type = args.get(1,None)
+    case_sub_type = args.get(2,'')
+
+    momic = case_type is None or \
+           (case_type == 'cb' and case_sub_type == '') or \
+           (case_type == 'cb' and case_sub_type == 'momic')
+
+    stoch = case_type is None or \
+           (case_type == 'cb' and case_sub_type == '') or \
+           (case_type == 'cb' and case_sub_type == 'stoch')
+
+    twc = case_type is None or \
+           (case_type == 'eat' and case_sub_type == '') or \
+           (case_type == 'eat' and case_sub_type == 'twc')
+
+    gpf = case_type is None or \
+           (case_type == 'eat' and case_sub_type == '') or \
+           (case_type == 'eat' and case_sub_type == 'gpf')
+
+    if not any([momic, stoch, twc, gpf]):
+        logger.warning("Warning: Selected use case(s) not supported.")
+    else:
+        if momic: run_cb_momic()
+        if stoch: run_cb_stochastic()
+        if twc: run_eat_twc()
+        if gpf: run_eat_gpf()
