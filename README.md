@@ -47,7 +47,7 @@ To run the kinetics wrapper, use the following commands:
 ./run_container.sh examples cb
  # 5. run carbon black momic example
 ./run_container.sh examples cb momic
- # 5. run all eat examples
+ # 6. run all eat examples
 ./run_container.sh examples eat
 ```
 
@@ -70,10 +70,10 @@ When one of the example scripts is executed, the wrapper currently does the foll
 - Input CUDS objects are translated to JSON
 - JSON is transmitted as a HTTP request to the remote KineticsAgent server
 	- From this point on, the AgentBridge class continually contacts the KineticsAgent server to request the simulation status
-- KineticsAgent applys JSON inputs to the relevant simulation template
+- KineticsAgent applies JSON inputs to the relevant simulation template
 - Final simulation files are sent to compute node for execution
-	- Once complete, the KineticsAgent identifies the requested outputs from the simulation and will repsond with then upon the next check from the AgentBridge
-- JSON outputs are recieved from the remote KineticsAgent
+	- Once complete, the KineticsAgent identifies the requested outputs from the simulation and will respond with them upon the next check from the AgentBridge
+- JSON outputs are received from the remote KineticsAgent
 - Results from JSON are parsed into new CUDS objects
 - CUDS outputs are written to file for inspection
 
