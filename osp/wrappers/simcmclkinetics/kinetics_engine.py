@@ -89,6 +89,7 @@ class KineticsEngine(ABC):
             else:
                 outputs_file = open("output_results.txt", "w")
                 for result_item in results:
+                    root_cuds_object.add(result_item, rel=CMCL.HAS_PART)
                     pretty_print(result_item, outputs_file)
                 outputs_file.close()
                 print("CUDS representation of results written to: ./output_results.txt")
