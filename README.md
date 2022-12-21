@@ -94,7 +94,7 @@ commands instead:
 ## Documentation
 
 More extensive documentation can be found at
-[simcmclkinetics.readthedocs.io](https://simnanodome.readthedocs.io).
+[simcmclkinetics.readthedocs.io](https://simcmclkinetics.readthedocs.io).
 
 ## Contact
 For questions, issues, or suggestions, please contact mdhillman<@>cmclinnovations.com
